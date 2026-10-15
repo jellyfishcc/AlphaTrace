@@ -1,0 +1,2 @@
+# Optional stage-two PDF reader; stage one remains standard-library only.
+pypdf==6.10.0

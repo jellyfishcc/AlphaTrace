@@ -1,10 +1,28 @@
-# AlphaTrace Agent
+# TraceLab（仓库名 AlphaTrace）
 
 基于财务异常驱动的上市公司业绩归因与证据验证智能体。
 
 ## 当前状态
 
-项目处于准备阶段，尚未实现可运行的分析系统。目标公司、金融数据、计算规则和团队分工待确认。
+2026-10-15：已实现第一阶段的 CSV 读取、输入校验和逐项两期差额计算。
+尚未接入真实案例、金融组人工核对结果、利润桥接或 LLM。下列初期目标属于后续规划，不代表已经完成。
+
+## 第一阶段运行
+
+复用本机 Python，无第三方运行或测试依赖。支持 Python 3.10+，本机验证使用 Python 3.14.6。
+从本仓库目录运行：
+
+```powershell
+python -X utf8 -m tracelab --input examples/simulated/financial.csv --metadata examples/simulated/metadata.json
+python -X utf8 -m unittest discover -s tests -v
+```
+
+每次运行在 `outputs/stage1/<run_id>/` 保存独立结果，不覆盖原始文件。
+详情见 [第一阶段数据契约和操作说明](docs/stage1.md)。
+
+金融组填写 [CSV 空模板](templates/financial.csv) 和 [元数据模板](templates/metadata.json)。
+模板只有字段，没有预先指定的公司、科目或业务规则；未填写前不能通过校验。
+模拟输入独立保存在 `examples/simulated/`，不是金融业务验收。
 
 ## 初期目标
 

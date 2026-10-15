@@ -1,0 +1,23 @@
+{
+  "dataset_id": "simulated-smoke-test-v1",
+  "data_kind": "simulated",
+  "comparability_confirmed": true,
+  "base": {
+    "company": "纯模拟主体（非真实公司）",
+    "period_start": "2024-01-01",
+    "period_end": "2024-12-31",
+    "currency": "CNY",
+    "statement_scope": "模拟同范围报表",
+    "profit_basis": "模拟口径，仅测试输入检查",
+    "data_version": "模拟fixture-v1，无原始财报"
+  },
+  "current": {
+    "company": "纯模拟主体（非真实公司）",
+    "period_start": "2025-01-01",
+    "period_end": "2025-12-31",
+    "currency": "CNY",
+    "statement_scope": "模拟同范围报表",
+    "profit_basis": "模拟口径，仅测试输入检查",
+    "data_version": "模拟fixture-v1，无原始财报"
+  }
+}

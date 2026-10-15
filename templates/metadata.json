@@ -1,0 +1,23 @@
+{
+  "dataset_id": "",
+  "data_kind": "real",
+  "comparability_confirmed": null,
+  "base": {
+    "company": "",
+    "period_start": "",
+    "period_end": "",
+    "currency": "",
+    "statement_scope": "",
+    "profit_basis": "",
+    "data_version": ""
+  },
+  "current": {
+    "company": "",
+    "period_start": "",
+    "period_end": "",
+    "currency": "",
+    "statement_scope": "",
+    "profit_basis": "",
+    "data_version": ""
+  }
+}

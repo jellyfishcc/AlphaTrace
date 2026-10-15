@@ -1,0 +1,4 @@
+item_id,item_name,base_amount,current_amount,base_unit,current_unit,base_definition,current_definition,base_source,current_source
+demo_a,模拟项目A,100.10,120.35,元,元,模拟同口径项目A,模拟同口径项目A,纯模拟输入第1行基期（无真实财报）,纯模拟输入第1行本期（无真实财报）
+demo_b,模拟项目B,-10.00,-7.50,元,元,模拟同口径项目B,模拟同口径项目B,纯模拟输入第2行基期（无真实财报）,纯模拟输入第2行本期（无真实财报）
+demo_c,模拟项目C,0.00,0.00,万元,万元,模拟同口径项目C,模拟同口径项目C,纯模拟输入第3行基期（无真实财报）,纯模拟输入第3行本期（无真实财报）

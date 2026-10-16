@@ -21,6 +21,20 @@ FILES = {
     'early': '1.docx', 'interface': '数据接口建议.docx',
     '2024': '格力2024 年年度报告.pdf', '2025': '格力2025年年度报告.pdf',
 }
+REVISED_FILES = FILES | {
+    'xlsx': '格力电器金融组核验整理材料及部分归因分析_数据底稿_修订版.xlsx',
+    'latest': '格力电器金融组核验整理材料及部分归因分析_修订版.docx',
+}
+
+
+def select_files(source_dir, revision='auto'):
+    if revision not in ('auto', 'original', 'revised'):
+        raise ValueError('未知资料版本')
+    present = [(Path(source_dir)/REVISED_FILES[k]).exists() for k in ('xlsx', 'latest')]
+    if revision == 'auto' and any(present) and not all(present):
+        raise ValueError('修订版 Word 与 Excel 必须成对提供，不能混用版本')
+    selected = 'revised' if revision == 'revised' or (revision == 'auto' and all(present)) else 'original'
+    return dict(REVISED_FILES if selected == 'revised' else FILES), selected
 COMPANY = '珠海格力电器股份有限公司'
 NAMES = ['营业总收入', '营业收入', '利息收入', '手续费及佣金收入', '营业总成本',
          '营业成本', '利息支出', '手续费及佣金支出', '税金及附加', '销售费用',
@@ -112,9 +126,10 @@ def segment_lines(pages, name):
     return [(p,line) for p in pages for line in p['text'].splitlines() if pattern.search(line)]
 
 
-def run(source_dir, output_root):
+def run(source_dir, output_root, revision='auto'):
     from pypdf import PdfReader, __version__ as pdf_version
     source_dir = Path(source_dir)
+    files, selected_revision = select_files(source_dir, revision)
     run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:12]
     out = Path(output_root)/run_id
     out.mkdir(parents=True, exist_ok=False)
@@ -132,7 +147,7 @@ def run(source_dir, output_root):
 
     event('start', run_id=run_id)
     try:
-        for key, filename in FILES.items():
+        for key, filename in files.items():
             path = source_dir/filename
             raw = path.read_bytes()
             snapshot = out/'inputs'/filename
@@ -193,11 +208,11 @@ def run(source_dir, output_root):
                 continue
             name = cell(sheets,'财务原始数据',r,'A')
             if name not in MAPPING:
-                conflict('UNMAPPED_METRIC',FILES['xlsx'],f'财务原始数据!A{r}',name,'', '未猜测字段映射')
+                conflict('UNMAPPED_METRIC',files['xlsx'],f'财务原始数据!A{r}',name,'', '未猜测字段映射')
                 continue
             key = MAPPING[name]
             if name in duplicate:
-                conflict('DUPLICATE_METRIC',FILES['xlsx'],f'财务原始数据!A{r}',name,'', '重复行均不可作为计算输入')
+                conflict('DUPLICATE_METRIC',files['xlsx'],f'财务原始数据!A{r}',name,'', '重复行均不可作为计算输入')
             vals = []
             for col in 'BC':
                 c = sheets['财务原始数据'][r].get(f'{col}{r}', {})
@@ -209,7 +224,7 @@ def run(source_dir, output_root):
                         raise ValueError('缺失金额')
                 except (ValueError, InvalidOperation) as exc:
                     val = None
-                    conflict('AMOUNT_TYPE',FILES['xlsx'],f'财务原始数据!{col}{r}',c,'',str(exc))
+                    conflict('AMOUNT_TYPE',files['xlsx'],f'财务原始数据!{col}{r}',c,'',str(exc))
                 vals.append(val)
             a,b = vals
             original_pair = tuple(vals)
@@ -227,14 +242,16 @@ def run(source_dir, output_root):
                     (2025,b,pair25[1],excerpt25,pp['2025']),
                     (2024,a,pair24[0],excerpt24,pp['2024'])]:
                 source_year = '2024' if page is pp['2024'] else '2025'
-                status = 'exact_match' if actual is not None and actual == expected else 'pending_blank_or_mismatch'
+                status = ('exact_match' if actual is not None and actual == expected else
+                          'both_missing_not_zero' if actual is None and expected is None and excerpt else
+                          'pending_blank_or_mismatch')
                 checks.append(dict(metric_name=name, fiscal_year=year, excel_cell=f'财务原始数据!{("B" if year==2024 else "C")}{r}',
-                                   excel_yuan=decimal_text(actual), pdf_yuan=decimal_text(expected), source_file=FILES[source_year],
+                                   excel_yuan=decimal_text(actual), pdf_yuan=decimal_text(expected), source_file=files[source_year],
                                    source_section=section, printed_page=page['printed_page'], pdf_page=page['pdf_page'],
                                    original_text=excerpt, status=status))
-                if status != 'exact_match':
-                    conflict('PDF_VALUE_CHECK',FILES['xlsx'],checks[-1]['excel_cell'],decimal_text(actual),
-                             f'{FILES[source_year]} 印刷页{page["printed_page"]}: {decimal_text(expected) or "空白/未提取"}',
+                if status == 'pending_blank_or_mismatch':
+                    conflict('PDF_VALUE_CHECK',files['xlsx'],checks[-1]['excel_cell'],decimal_text(actual),
+                             f'{files[source_year]} 印刷页{page["printed_page"]}: {decimal_text(expected) or "空白/未提取"}',
                              f'{name} {year}：不使用推算数字消除冲突')
                     # Preserve differing numeric Excel values and expose their
                     # residuals. A missing PDF value is not evidence of zero.
@@ -245,9 +262,9 @@ def run(source_dir, output_root):
             values[key]=(a,b)
             cited = cell(sheets,'财务原始数据',r,'H') or ''
             if '印刷页86' in cited and pp is income:
-                conflict('PAGE_LOCATOR',FILES['xlsx'],f'财务原始数据!H{r}',cited,
+                conflict('PAGE_LOCATOR',files['xlsx'],f'财务原始数据!H{r}',cited,
                          f'2025印刷页{income["2025"]["printed_page"]}/PDF{income["2025"]["pdf_page"]}', '保留原出处并另存核实定位')
-            sources = {side:f'{FILES["2025"]} | {section} | 印刷页{pp["2025"]["printed_page"]} | PDF第{pp["2025"]["pdf_page"]}页 | {year}列; Excel {col}{r}'
+            sources = {side:f'{files["2025"]} | {section} | 印刷页{pp["2025"]["printed_page"]} | PDF第{pp["2025"]["pdf_page"]}页 | {year}列; Excel {col}{r}'
                        for side,year,col in [('base',2024,'B'),('current',2025,'C')]}
             normalized.append(dict(item_id=key,item_name=name,base_amount=decimal_text(a),current_amount=decimal_text(b),
                                    base_unit='元',current_unit='元',base_definition=f'合并报表/{name}',current_definition=f'合并报表/{name}',
@@ -258,14 +275,14 @@ def run(source_dir, output_root):
             for year,val,col in [(2024,a,'B'),(2025,b,'C')]:
                 extended.append(dict(company=COMPANY,stock_code='000651',fiscal_year=year,currency='CNY',unit='元',
                                      statement_scope='合并',metric_name=name,standard_metric=key,metric_value=decimal_text(val),
-                                     display_value_yi=display_yi(val) if val is not None else '',source_file=FILES['2025'],
+                                     display_value_yi=display_yi(val) if val is not None else '',source_file=files['2025'],
                                      source_section=section,printed_page=pp['2025']['printed_page'],pdf_page=pp['2025']['pdf_page'],
                                      excel_cell=f'财务原始数据!{col}{r}',evidence_id='E06' if key=='adjusted_parent_profit' else 'E01' if key=='operating_cashflow' else 'E05',
                                      formula='Excel原始存储元金额；展示=元/100000000',
                                      verification_status=('pending' if val is None else 'exact_pdf_match'
                                          if val==pair25[0 if year==2024 else 1] and (year!=2024 or val==pair24[0]) else 'numeric_source_difference_pending')))
         for name in set(NAMES)-set(names):
-            conflict('MISSING_METRIC',FILES['xlsx'],'财务原始数据',name,'缺失','不补零')
+            conflict('MISSING_METRIC',files['xlsx'],'财务原始数据',name,'缺失','不补零')
         stage1.write_json(out/'field_mapping.json',source_rows)
         stage1.write_json(out/'source_checks.json',checks)
         stage1.write_json(out/'financial_records.json',extended)
@@ -324,11 +341,26 @@ def run(source_dir, output_root):
                     relation_status=br['relation_status'],business_status=br['business_status'],unit='元'))
         stage1.write_csv(out/'bridge_checks.csv',list(bridge_rows[0]),bridge_rows)
         stage1.write_csv(out/'directional_impacts.csv',list(impacts[0]),impacts)
-        comparisons = compare_references(sheets,docs,metrics,bridges,impacts,conflict)
+        comparisons = compare_references(sheets,docs,metrics,bridges,impacts,conflict,files)
+        cost_comparisons = [r for r in comparisons if r['location'].startswith('营业总成本分项!')]
+        stage1.write_json(out/'cost_detail_checks.json', cost_comparisons)
+        cost_impacts = []
+        for row in impacts:
+            if row['level'] == 'total_cost':
+                cost_impacts.append(dict(row, level='operating_profit_via_total_cost', sign=-1,
+                    signed_change=decimal_text(-num(row['change'])) if row['change'] else '',
+                    formula='-(current - base)',
+                    note='营业总成本的展开明细，不能与营业总成本总额重复计入营业利润桥接'))
+        stage1.write_json(out/'cost_directional_impacts.json', cost_impacts)
         stage1.write_json(out/'human_comparison.json',comparisons)
         stage1.write_csv(out/'human_comparison.csv',list(comparisons[0]),comparisons)
-        evidence=prepare_evidence(sheets,pages['2025'],income['2025'],conflict)
+        evidence=prepare_evidence(sheets,pages['2025'],income['2025'],conflict,files)
         stage1.write_json(out/'evidence.json',evidence)
+        for task in investigation['investigation_tasks']:
+            if task['id'] == 'profit_cashflow_reconciliation' and any(e['evidence_id']=='E07' for e in evidence):
+                task['available_evidence_ids'] = ['E07']
+                task['questions'].insert(0, '核验年报对收现增加、受限资金到期收回的披露；区分现金流同比变化与本期利润现金流差额。')
+        stage1.write_json(out/'investigation_plan.json', investigation)
         segment_checks=[]
         segment_pages=[p for p in pages['2025'] if p['printed_page'] in ('23','24')]
         for r in range(2,6):
@@ -342,31 +374,38 @@ def run(source_dir, output_root):
                                            printed_page=matching[0][0]['printed_page'] if len(matching)==1 else '',
                                            original_text=matching[0][1] if len(matching)==1 else ''))
                 if actual is None or expected!=actual:
-                    conflict('SEGMENT_CHECK',FILES['xlsx'],f'分产品与地区!{col}{r}',expected,actual,'未自动推算分部数据')
+                    conflict('SEGMENT_CHECK',files['xlsx'],f'分产品与地区!{col}{r}',expected,actual,'未自动推算分部数据')
         stage1.write_json(out/'segment_checks.json',segment_checks)
         # Explicitly preserve narrative contradictions; never overwrite originals.
         note=cell(sheets,'利润归因桥接',30,'A') or ''
         if '存在差额' in note:
-            conflict('INTERNAL_REFERENCE_CONTRADICTION',FILES['xlsx'],'利润归因桥接!A30 vs E13',note,
+            conflict('INTERNAL_REFERENCE_CONTRADICTION',files['xlsx'],'利润归因桥接!A30 vs E13',note,
                      f'E13={cell(sheets,"利润归因桥接",13,"E")}; 程序选定总额残差={bridges[3]["change_residual"]}',
                      '文字与数值不一致；数学闭合不代表完整桥接已验收')
-        conflict('PAGE_LOCATOR',FILES['latest'],'P60 / 合并利润表来源','2024印刷页112；2025印刷页86',
-                 f'2024印刷页{income["2024"]["printed_page"]}；2025印刷页{income["2025"]["printed_page"]}', '请更新金融组来源定位')
+        for i, paragraph in enumerate(docs['latest']['paragraphs'],1):
+            if '合并利润表' in paragraph and ('印刷页86' in paragraph or '印刷页112' in paragraph):
+                conflict('PAGE_LOCATOR',files['latest'],f'Paragraph {i}',paragraph,
+                         f'2024印刷页{income["2024"]["printed_page"]}；2025印刷页{income["2025"]["printed_page"]}', '请更新金融组来源定位')
         scope_page=next((p for p in pages['2025'] if p['printed_page']=='24'),None)
         if scope_page and '合并范围的变更' in scope_page['text']:
-            conflict('SCOPE_CAVEAT',FILES['2025'],'印刷页24/合并范围变动', '两期均为合并报表',
+            conflict('SCOPE_CAVEAT',files['2025'],'印刷页24/合并范围变动', '两期均为合并报表',
                      '报告披露合并范围发生变动，附注六说明', '允许披露口径差额计算；恒定主体范围经营归因仍待确认')
         stage1.write_json(out/'conflicts.json',conflicts)
         stage1.write_csv(out/'conflicts.csv',list(conflicts[0]),conflicts)
-        pending=['确认2025手续费及佣金收入空白是否可按零处理；当前保留Excel原值并阻止该项目计算。',
-                 '确认Excel金额存储尾差（如营业外收入）与PDF披露精度的处理：主结果保留Excel原值，PDF另行计算，不自动改数或设容差。',
+        pending=['确认Excel金额存储尾差（如营业外收入）与PDF披露精度的处理：主结果保留Excel原值，PDF另行计算，不自动改数或设容差。',
                  '确认营业利润全量映射及空白的净敞口套期收益等处理，不把选定总额闭合等同于完整桥接验收。',
                  '确认原始勾稽和人工对比的容差/舍入规则；程序未设置业务通过阈值。',
-                 '修订金融组错误页码、Word表4的单位/数量级问题及Excel桥接文字与数字冲突。',
+                 '按本次conflicts.json逐项核对仍存在的金额和页码差异；早期Word仅作为历史参考。',
                  '演示方向已确认：分层利润拆解及利润下降、经营现金流增长；确认合并范围影响，并补齐现金流补充资料的结构化调节项。',
-                 '下一阶段可使用已核实的数字和E01-E06原文；模型配置及单次分析问题另行确认。']
+                 '下一阶段可使用本次evidence.json已提取的原文；模型配置及单次分析问题另行确认。']
+        blank_note = ('修订版已将手续费及佣金收入本期保留为空；该项目继续阻断，不再要求确认是否填零。'
+                      if selected_revision=='revised' and cell(sheets,'财务原始数据',5,'C') is None else
+                      '手续费及佣金收入的Excel零与PDF空白不一致，保留冲突并阻断。')
+        pending.insert(0, blank_note)
         (out/'pending_questions.md').write_text('# 金融组待确认\n\n'+'\n'.join(f'{i+1}. {q}' for i,q in enumerate(pending))+'\n',encoding='utf-8')
         summary=dict(run_id=run_id,status='completed_with_pending_confirmation',input_files=len(inventory),
+                     source_revision=selected_revision, selected_files=files,
+                     cost_detail_checks=len(cost_comparisons),
                      metric_count=len(metrics),calculated=sum(m['status']=='calculated' for m in metrics),
                      blocked=sum(m['status']=='blocked' for m in metrics),pdf_checks=dict(Counter(c['status'] for c in checks)),
                      comparison_counts=dict(Counter(c['status'] for c in comparisons)),evidence_records=len(evidence),
@@ -381,6 +420,7 @@ def run(source_dir, output_root):
             '实际信号：'+('；'.join(s['description'] for s in investigation['signals']) or '未识别到利润下降且经营现金流增长的组合；仍保留逐层利润调查')+'。\n\n'+
             '调查准备见 investigation_plan.json；尚未执行 Agent 或经营因果分析。\n\n'+
             f'读取{len(inventory)}个附件；{len(metrics)}个项目，{summary["calculated"]}个已计算，{summary["blocked"]}个阻断。\n\n'+
+            f'资料版本：{selected_revision}；成本明细核对{len(cost_comparisons)}项；证据{len(evidence)}条。{blank_note}\n\n'+
             '\n'.join(f'- {b["target"]}: {b["math_status"]}；2024残差={b["base"]["residual"]}元；2025残差={b["current"]["residual"]}元；变化残差={b["change_residual"]}元；业务待确认。' for b in bridges)+
             '\n\n详细核对：human_comparison.csv；冲突：conflicts.csv；原文：evidence.json；待办：pending_questions.md。\n',encoding='utf-8')
         event('finished',**summary)
@@ -393,7 +433,8 @@ def run(source_dir, output_root):
         (out/'events.jsonl').write_text(''.join(json.dumps(e,ensure_ascii=False)+'\n' for e in events),encoding='utf-8')
 
 
-def compare_references(sheets,docs,metrics,bridges,impacts,conflict):
+def compare_references(sheets,docs,metrics,bridges,impacts,conflict,files=None):
+    files = files or FILES
     by_name={m['item_name']:m for m in metrics}
     output=[]
 
@@ -423,7 +464,7 @@ def compare_references(sheets,docs,metrics,bridges,impacts,conflict):
             sourcefield={'base_yi':'base_amount','current_yi':'current_amount','difference_yi':'difference'}.get(field,field)
             actual=m[sourcefield]
             if field.endswith('_yi') and actual: actual=decimal_text(Decimal(actual)/YI)
-            add(name,field,actual,cell(sheets,'财务原始数据',r,col),FILES['xlsx'],f'财务原始数据!{col}{r}',
+            add(name,field,actual,cell(sheets,'财务原始数据',r,col),files['xlsx'],f'财务原始数据!{col}{r}',
                 '亿元' if field.endswith('_yi') else 'ratio' if field=='yoy' else '元',6 if field.endswith('_yi') else None,
                 '原金额与适配值核对非独立验收' if col in 'BC' else '普通同比在非正基数/跨符号时不计算' if col=='G' else '')
     # Latest Word table amounts and rates; table 4 is intentionally included to expose its unit errors.
@@ -445,16 +486,16 @@ def compare_references(sheets,docs,metrics,bridges,impacts,conflict):
                             number=re.match(r'[+-]?[0-9]+(?:\.[0-9]+)?',reference)
                             if number: reference=number.group()
                             else:
-                                add(name,field,None,reference,FILES[version],f'Table 4 R{ri} C{ci+1}','亿元',None,'仅解释/方向，无精确数值可验收')
+                                add(name,field,None,reference,files[version],f'Table 4 R{ri} C{ci+1}','亿元',None,'仅解释/方向，无精确数值可验收')
                                 continue
                         else: continue
                     yuan=version=='early' and ti==1
                     actual=num(m[field]); actual=actual if yuan or actual is None else actual/YI
                     places=len(reference.split('.')[1]) if '.' in reference else 0
-                    add(name,field,actual,reference,FILES[version],f'Table {ti+1} R{ri} C{ci+1}',
+                    add(name,field,actual,reference,files[version],f'Table {ti+1} R{ri} C{ci+1}',
                         '元' if yuan else '亿元',places,'早期版本仅比较，不覆盖最新版' if version=='early' else '')
                 if ti==2:
-                    add(name,'yoy_percent',num(m['yoy'])*100 if m['yoy'] else None,row[4],FILES[version],f'Table 3 R{ri} C5','%',2)
+                    add(name,'yoy_percent',num(m['yoy'])*100 if m['yoy'] else None,row[4],files[version],f'Table 3 R{ri} C5','%',2)
     # Excel's selected contributions are explicit numeric human references.
     imap={i['metric_name']:i for i in impacts if i['level']=='operating_profit'}
     for r in range(3,11):
@@ -462,12 +503,12 @@ def compare_references(sheets,docs,metrics,bridges,impacts,conflict):
         if name in imap:
             actual=num(imap[name]['signed_change'])
             add(name,'selected_operating_profit_impact',actual/YI if actual is not None else None,
-                cell(sheets,'利润归因桥接',r,'E'),FILES['xlsx'],f'利润归因桥接!E{r}','亿元',None,
+                cell(sheets,'利润归因桥接',r,'E'),files['xlsx'],f'利润归因桥接!E{r}','亿元',None,
                 '选定总额方向性贡献，非全量业务验收')
     for br in bridges:
         if br['target']=='operating_profit':
             add('营业利润','selected_change_residual',num(br['change_residual'])/YI if br['change_residual'] else None,
-                cell(sheets,'利润归因桥接',13,'E'),FILES['xlsx'],'利润归因桥接!E13','亿元',None)
+                cell(sheets,'利润归因桥接',13,'E'),files['xlsx'],'利润归因桥接!E13','亿元',None)
     for r in range(17,26):
         name=cell(sheets,'利润归因桥接',r,'A')
         name=aliases.get(name,name)
@@ -475,39 +516,79 @@ def compare_references(sheets,docs,metrics,bridges,impacts,conflict):
         for col,field in [('B','base_amount'),('C','current_amount'),('D','difference')]:
             actual=num(by_name[name][field])
             add(name,field,actual/YI if actual is not None else None,cell(sheets,'利润归因桥接',r,col),
-                FILES['xlsx'],f'利润归因桥接!{col}{r}','亿元',None,'Excel桥接表原始存储精度；不预设容差')
+                files['xlsx'],f'利润归因桥接!{col}{r}','亿元',None,'Excel桥接表原始存储精度；不预设容差')
+    if '营业总成本分项' in sheets:
+        sheet = '营业总成本分项'
+        cost_bridge = next(b for b in bridges if b['target']=='total_cost')
+        cost_names = {dict(zip(IDS,NAMES))[key] for key,_ in cost_bridge['terms']}
+        labels = [cell(sheets,sheet,r,'A') for r in sheets[sheet] if r>1]
+        counts = Counter(labels)
+        for name in cost_names:
+            if counts[name] != 1:
+                conflict('COST_DETAIL_STRUCTURE',files['xlsx'],sheet,name,counts[name], '成本明细必须唯一且完整，不能重复相加')
+        for r in sheets[sheet]:
+            label = cell(sheets,sheet,r,'A')
+            if label not in cost_names | {'分项合计','营业总成本（年报）'}: continue
+            name = '营业总成本' if label in ('分项合计','营业总成本（年报）') else label
+            m = by_name[name]
+            a,b = num(m['base_amount']),num(m['current_amount'])
+            if label=='分项合计':
+                a,b = num(cost_bridge['base']['calculated']),num(cost_bridge['current']['calculated'])
+            delta = b-a if a is not None and b is not None else None
+            entries=[('B','base_amount',a,'元'),('C','current_amount',b,'元'),
+                     ('D','base_yi',a/YI if a is not None else None,'亿元'),
+                     ('E','current_yi',b/YI if b is not None else None,'亿元'),
+                     ('F','difference_yi',delta/YI if delta is not None else None,'亿元'),
+                     ('G','operating_profit_impact',-delta/YI if delta is not None else None,'亿元')]
+            for col,field,actual,unit in entries:
+                add(label,field,actual,cell(sheets,sheet,r,col),files['xlsx'],f'{sheet}!{col}{r}',unit,
+                    None,'明细与总额不可重复计入桥接；保留Excel原始存储尾差')
+        for r in sheets[sheet]:
+            if cell(sheets,sheet,r,'A')=='分项与年报总额差异（亿元）':
+                residual=num(cost_bridge['change_residual'])
+                add('营业总成本','detail_change_minus_reported',-residual/YI if residual is not None else None,
+                    cell(sheets,sheet,r,'F'),files['xlsx'],f'{sheet}!F{r}','亿元',None)
     return output
 
 
-def prepare_evidence(sheets,pages,income,conflict):
+def prepare_evidence(sheets,pages,income,conflict,files=None):
+    files = files or FILES
     by_print={p['printed_page']:p for p in pages if p['printed_page']}
     records=[]
-    page_ids={'E01':['9'],'E02':['9'],'E03':['9'],'E04':['23','24'],'E05':[income['printed_page']],'E06':['6','7','8']}
+    page_ids={'E01':['9'],'E02':['9'],'E03':['9'],'E04':['23','24'],'E05':[income['printed_page']],'E06':['6','7','8'],
+              'E07':['28','29','178','179']}
     ranges={'E01':('2025 年，公司实现','57.93%。'),
             'E02':('2025 年，家电行业整体承压','同比下降 3.9%。'),
             'E03':('根据产业在线数据，2025 年中国家用空调行业','市场需求回落等因素影响。')}
     related={'E01':['total_revenue','parent_profit','operating_cashflow'],'E02':['revenue'],
              'E03':['revenue'],'E04':['revenue','operating_cost'],'E05':['operating_profit','parent_profit','income_tax','other_income'],
-             'E06':['adjusted_parent_profit','parent_profit']}
-    for r in range(2,8):
+             'E06':['adjusted_parent_profit','parent_profit'],'E07':['net_profit','operating_cashflow']}
+    seen = set()
+    for r in sorted(sheets['证据台账']):
+        if r==1: continue
         eid=cell(sheets,'证据台账',r,'A')
+        if not eid: continue
+        if eid not in page_ids or eid in seen:
+            conflict('EVIDENCE_ID',files['xlsx'],f'证据台账!A{r}',eid,'','未适配或重复的证据ID，不能静默忽略')
+            continue
+        seen.add(eid)
         chunks=[]
         for printed in page_ids[eid]:
             page=by_print.get(printed)
             if not page:
-                conflict('EVIDENCE_PAGE_MISSING',FILES['2025'],eid,printed,'','需人工定位')
+                conflict('EVIDENCE_PAGE_MISSING',files['2025'],eid,printed,'','需人工定位')
                 continue
             excerpt=page['text']
             if eid in ranges:
                 start,end=ranges[eid]
                 a=excerpt.find(start); b=excerpt.find(end,a)
                 if a<0 or b<0:
-                    conflict('EVIDENCE_ANCHOR',FILES['2025'],eid,start,end,'锚点未找到，保留完整页待复核')
+                    conflict('EVIDENCE_ANCHOR',files['2025'],eid,start,end,'锚点未找到，保留完整页待复核')
                 else: excerpt=excerpt[a:b+len(end)]
             chunks.append(dict(printed_page=printed,pdf_page=page['pdf_page'],original_text=excerpt,
                                excerpt_sha256=hashlib.sha256(excerpt.encode()).hexdigest()))
         records.append(dict(evidence_id=eid,company=COMPANY,stock_code='000651',fiscal_year=2025,
-                            source_file=FILES['2025'],source_section='合并利润表' if eid=='E05' else cell(sheets,'证据台账',r,'C'),
+                            source_file=files['2025'],source_section='合并利润表' if eid=='E05' else cell(sheets,'证据台账',r,'C'),
                             printed_page=[c['printed_page'] for c in chunks],pdf_page=[c['pdf_page'] for c in chunks],
                             reported_location=cell(sheets,'证据台账',r,'C'),
                             actual_location=[{'printed_page':c['printed_page'],'pdf_page':c['pdf_page']} for c in chunks],
@@ -515,7 +596,20 @@ def prepare_evidence(sheets,pages,income,conflict):
                             finance_summary_not_quote=cell(sheets,'证据台账',r,'D'),
                             support_boundary=cell(sheets,'证据台账',r,'E'),
                             verification_status='original_pdf_text_extracted; causal_assessment_not_performed',
-                            note='E05原定位错误已在actual_location更正；PDF提取换行可能与排版不同' if eid=='E05' else '不采用Word摘要替代PDF原文'))
+                            note='PDF提取换行可能与排版不同；摘要不能替代原文'))
+        if eid=='E07':
+            text = compact('\n'.join(c['original_text'] for c in chunks if c['printed_page']=='179'))
+            amount = re.search(r'票据保证金等净减少额('+MONEY.pattern+r')元',text)
+            amount_value = num(amount.group(1)) if amount else None
+            records[-1]['disclosed_amount'] = dict(metric='票据保证金等净减少额', fiscal_year=2025,
+                value_yuan=decimal_text(amount_value), printed_page='179',
+                nature='本期调节项目的组成金额；不是经营现金流同比增量',
+                status='extracted' if amount else 'pending')
+            if not amount:
+                conflict('EVIDENCE_AMOUNT',files['2025'],'E07/印刷页179','票据保证金等净减少额','','金额未唯一提取')
+            conflict('PAGE_LOCATOR',files['xlsx'],f'证据台账!C{r}',cell(sheets,'证据台账',r,'C'),
+                     '同比说明印刷28/PDF29；净利润差异说明印刷29/PDF30；补充表印刷178/PDF179；保证金注释印刷179/PDF180',
+                     '现金流解释和保证金金额跨页，需补全原始定位')
     return records
 
 
@@ -523,9 +617,11 @@ def main(argv=None):
     parser=argparse.ArgumentParser(description='TraceLab 第二阶段格力案例（不调用LLM）')
     parser.add_argument('--source-dir',required=True,type=Path)
     parser.add_argument('--output',default=Path('outputs/stage2'),type=Path)
+    parser.add_argument('--revision', choices=('auto','original','revised'), default='auto',
+                        help='默认成对优先选择修订版；original 可复现旧资料')
     args=parser.parse_args(argv)
     try:
-        folder,summary=run(args.source_dir,args.output)
+        folder,summary=run(args.source_dir,args.output,args.revision)
     except (ValueError,OSError,KeyError,InvalidOperation) as exc:
         print(f'第二阶段失败：{exc}')
         return 1

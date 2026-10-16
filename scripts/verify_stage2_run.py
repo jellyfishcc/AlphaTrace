@@ -37,7 +37,8 @@ assert all(b['math_status']=='exact_zero_residual' for b in read('pdf_reference_
 assert all(b['business_status']=='待金融组确认' and b['tolerance'] is None for b in read('bridges.json'))
 checks.append('Excel非零尾差、未完整收入检查及PDF三层精确勾稽均保留，未设业务容差')
 human=read('human_comparison.json')
-main=[h for h in human if h['source_file'].endswith('(1).docx') and h['location'].startswith('Table 3 ') and h['field']=='yoy_percent']
+latest=next(i['file'] for i in read('inventory.json') if i['key']=='latest')
+main=[h for h in human if h['source_file']==latest and h['location'].startswith('Table 3 ') and h['field']=='yoy_percent']
 assert len(main)==7 and all(h['status'] in ('exact_match','display_rounding_match') for h in main)
 checks.append('最新版Word七项主要同比按两位百分数展示一致')
 assert len(read('segment_checks.json'))==8
@@ -50,9 +51,28 @@ for evidence in read('evidence.json'):
         assert chunk['original_text'] in pages[chunk['pdf_page']]['text']
         assert chunk['printed_page']==pages[chunk['pdf_page']]['printed_page']
         assert hashlib.sha256(chunk['original_text'].encode()).hexdigest()==chunk['excerpt_sha256']
-checks.append('E01-E06所有引文均能回到原始PDF提取页，页码及摘录哈希一致')
+checks.append('所有证据引文均能回到原始PDF提取页，页码及摘录哈希一致')
+if read('manifest.json').get('source_revision')=='revised':
+    assert len(read('evidence.json'))==7
+    e07=next(e for e in read('evidence.json') if e['evidence_id']=='E07')
+    assert e07['printed_page']==['28','29','178','179']
+    assert Decimal(e07['disclosed_amount']['value_yuan'])==Decimal('15667164024.70')
+    assert '15667164024.70' != metrics['operating_cashflow']['difference']
+    assert len(read('cost_directional_impacts.json'))==8
+    costs=read('cost_directional_impacts.json')
+    assert all(Decimal(c['signed_change'])==-Decimal(c['change']) for c in costs)
+    assert sum(Decimal(c['signed_change']) for c in costs)==-Decimal(metrics['total_cost']['difference'])
+    assert bridges['total_cost']['math_status']=='exact_zero_residual'
+    assert len(read('cost_detail_checks.json'))==61
+    assert all(c['status']=='exact_match' for c in read('cost_detail_checks.json') if c['unit']=='元')
+    assert not any(c['kind']=='INTERNAL_REFERENCE_CONTRADICTION' for c in read('conflicts.json'))
+    major=[h for h in human if h['source_file']==latest and h['location'].startswith('Table 4 ') and
+           h['metric_name'] in ('营业利润','利润总额','净利润','归属于母公司股东的净利润') and
+           h['field'] in ('base_amount','current_amount')]
+    assert len(major)==8 and all(h['status'] in ('exact_match','display_rounding_match') for h in major)
+    checks.append('修订版八项成本方向与总额一致，E07跨页金额核实，Word八处数量级问题及桥接文字冲突已修正')
 assert read('manifest.json')['llm_called'] is False
-report={'status':'passed','checks':checks,'unit_tests':'23 tests passed in separate unittest run',
+report={'status':'passed','checks':checks,
         'business_acceptance':'pending; software verification only'}
 (p/'verification.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print(json.dumps(report,ensure_ascii=False,indent=2))

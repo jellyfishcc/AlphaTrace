@@ -1,5 +1,7 @@
 # 第三阶段：一次有限证据分析
 
+本页保留第三阶段早期操作与历史交付说明；当前状态以[项目首页](../README.md)为准，最近一次独立真实分析结果见[第三阶段测试与交接](stage3-test-handoff.md)。
+
 2026-10-16补充：已增加百炼Chat Completions最小适配，可显式选择--provider bailian；
 原OpenAI默认路径保留。以下OpenAI配置说明仅适用于原路径。
 百炼配置、无费用检查和真实连通性许可步骤见[bailian-connectivity.md](bailian-connectivity.md)。

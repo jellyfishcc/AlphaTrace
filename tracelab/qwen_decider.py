@@ -46,8 +46,9 @@ class LiveBailianTransport:
     """Explicit opt-in only. Reuses existing client; not used by offline CLI."""
     simulation=False
 
-    def __init__(self, *, authorized=False):
+    def __init__(self, *, authorized=False, expected_endpoint=None):
         if authorized is not True: raise ValueError('real_request_not_authorized')
+        self.expected_endpoint=expected_endpoint
 
     def send(self,body,timeout,diagnostics):
         from .bailian import configuration
@@ -55,6 +56,8 @@ class LiveBailianTransport:
         config=configuration(body['model'])
         if not config.key: raise DecisionFailure('missing_credentials')
         endpoint=config.endpoint
+        if self.expected_endpoint is not None and endpoint!=self.expected_endpoint:
+            raise DecisionFailure('endpoint_changed_since_authorization')
         diagnostics['request_attempted']=True
         return call_api(body,config.key,endpoint=endpoint,timeout=timeout,diagnostics=diagnostics)
 
@@ -88,12 +91,15 @@ def strict_json(text):
 
 
 class QwenDecider:
-    def __init__(self,payload,scope,transport,*,budget=Budget(),model='qwen-plus'):
+    def __init__(self,payload,scope,transport,*,budget=Budget(),model='qwen-plus',initial_fact_ids=()):
         if not isinstance(scope,ExportScope) or not scope.authorization_label: raise ValueError('explicit_export_scope_required')
         if type(getattr(transport,'simulation',None))!=bool: raise ValueError('transport_mode_required')
         from .agent import LocalFacts
         facts=LocalFacts(payload)
         self.facts={key:facts.get(key) for key in scope.fact_ids}
+        self.initial_fact_ids=tuple(initial_fact_ids)
+        if len(self.initial_fact_ids)>4 or any(k not in self.facts for k in self.initial_fact_ids):
+            raise ValueError('initial_facts_outside_scope')
         self.evidence={e['evidence_id']:copy.deepcopy(e) for e in payload['evidence'] if e['evidence_id'] in scope.evidence_ids}
         if set(self.evidence)!=set(scope.evidence_ids) or any(not verified_evidence(e,payload) for e in self.evidence.values()):
             raise ValueError('export_source_not_verified')
@@ -151,6 +157,12 @@ class QwenDecider:
             remaining={**state.get('remaining',{}),'model_requests':self.budget.max_requests-self.attempts,
                        'conservative_token_budget':self.budget.total_tokens-self.charged},
             omissions=omitted,note='目录只含允许外发子集，省略不表示不存在；文字截断已标记，必要原文不足则停止或查询其他相关证据。')
+        if self.initial_fact_ids:
+            context['initial_facts']=[{**{k:self.facts[fid][k] for k in ('fact_id','name','periods','financial_level','availability','evidence_ids')},
+                'amounts':{field:{'元':units['元']} for field,units in self.facts[fid]['amounts'].items()},
+                'retrieved_source_quotes':[{'evidence_id':eid,'quote':self.evidence[eid]['text']}
+                    for eid in self.facts[fid]['evidence_ids'] if eid in selected_evidence and eid in self.evidence]}
+                for fid in self.initial_fact_ids]
         if len(state['goal'])>500:context['omissions'].append('goal_tail')
         if len(state.get('questions',[]))>4:context['omissions'].append('later_questions')
         return context
@@ -211,6 +223,7 @@ class QwenDecider:
                 self.actual_input+=a;self.actual_output+=b;record['usage']={'input_tokens':a,'output_tokens':b}
                 self.charged+=max(0,a+b-reserve)
             else:self.usage_unknown=True
+            if self.usage_unknown:raise DecisionFailure('unknown_usage_stop')
             if any(m['type']=='refusal' for m in response['messages']):raise DecisionFailure('model_refusal')
             if response['finish_reason']!='stop':raise DecisionFailure('incomplete_response')
             if self.actual_input+self.actual_output>self.budget.total_tokens:raise DecisionFailure('actual_token_budget_exceeded')

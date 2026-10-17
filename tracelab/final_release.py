@@ -302,7 +302,7 @@ def load_agent_payload(folder):
     payload['evidence'].extend(extra)
     # Add only exact-verified core metrics; reuse original source-check excerpts.
     existing={f['fact_id'] for f in payload['facts']}
-    disputed={c.get('item') for c in read(folder/'conflicts.json') if c['kind']=='word_display_conflict'}
+    disputed={c.get('item') for c in read(folder/'conflicts.json') if c['kind']=='word_display_conflict' and c.get('status')!='resolved'}
     for m in read(folder/'metrics.json'):
         if m['item_id'] in existing or m['status']!='calculated' or m['item_name'] in disputed: continue
         checks=[c for c in read(folder/'source_checks.json') if c['metric_name']==m['item_name']]

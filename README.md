@@ -35,6 +35,14 @@
 
 ## 本地运行与验证
 
+2026-10-18 补充：第一模块已有受限的原生文字 PDF 合并利润表提取入口。实际从格力 2025 年报 PDF 第 88 页（印刷第 87 页）读取五个科目的两年金额，输出精确 JSON/CSV 与独立来源核验结果。金额不从旧底稿复制；不使用 LLM/OCR，不代表任意 PDF 通用解析。见[PDF 提取运行与边界](docs/pdf-extraction.md)。
+
+```powershell
+python -X utf8 -m tracelab.pdf_extract --stage2-run outputs/final_revision/20261017T093152-d80de1cefa
+```
+
+运行需要本地原始 PDF 和完整已验证快照；新克隆不含私有附件。输出到独立 `outputs/pdf_extract/<run_id>/`，不会覆盖快照或自动接入可信事实。无私有附件时仍可运行公开合成测试：`python -X utf8 -m unittest discover -s tests -p test_pdf_extract.py -v`（真实资料集成测试会明确跳过）。
+
 第一阶段仅依赖 Python 标准库；年报读取及后续核验需要 [requirements-stage2.txt](requirements-stage2.txt) 中的依赖。使用 Python 3.10+，从仓库根目录运行：
 
 ```powershell

@@ -17,10 +17,10 @@ python -X utf8 -m tracelab.stage2 --source-dir "存放六个原始附件的目�
 python -X utf8 -m unittest discover -s tests -v
 ```
 
-本机无需再次安装依赖，可直接执行：
+以下命令要求所选 Python 已安装上述依赖；附件目录需替换为实际位置：
 
 ```powershell
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.stage2 --source-dir 'D:\Downloads\Wechat Files\xwechat_files\wxid_tj9nsz4aymqs12_87a4\temp\RWTemp\2026-10\626a979aaa90ddffbe4f357680f0a341'
+python -X utf8 -m tracelab.stage2 --source-dir '<本地附件目录>'
 ```
 
 支持 `--output` 指定根目录，默认 `outputs/stage2/<唯一run_id>/`。

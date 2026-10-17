@@ -1,0 +1,54 @@
+{
+  "claim": {
+    "company": "模拟公司（非真实）",
+    "period": "2025",
+    "base_period": "2024",
+    "metric_id": "net_profit",
+    "metric_name": "净利润",
+    "scope": "模拟合并口径",
+    "comparison_basis": "yoy",
+    "value_kind": "change_magnitude",
+    "value": "0.2000",
+    "unit": "亿元",
+    "direction": "增长",
+    "original_text": "模拟公司2025年净利润同比增长0.2000亿元。"
+  },
+  "payload": {
+    "data_kind": "simulated",
+    "company": "模拟公司（非真实）",
+    "periods": [
+      "2024",
+      "2025"
+    ],
+    "scope": "模拟合并口径",
+    "facts": [
+      {
+        "fact_id": "net_profit",
+        "name": "净利润",
+        "amounts": {
+          "base": {
+            "元": "100000000"
+          },
+          "current": {
+            "元": "80000000"
+          },
+          "change": {
+            "元": "-20000000"
+          }
+        },
+        "evidence_ids": [
+          "SIM_ONLY"
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "SIM_ONLY",
+        "source_file": "模拟数据（不存在真实年报）",
+        "printed_page": "不适用",
+        "pdf_page": "不适用",
+        "text": "软件测试设定：基期100000000元，本期80000000元。"
+      }
+    ]
+  }
+}

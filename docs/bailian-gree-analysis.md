@@ -52,7 +52,7 @@ JSON Object模式，enable_thinking=false，stream=false；本地既有Schema、
 
 ```powershell
 cd D:\Projects\TraceLab
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.stage3 --provider bailian --model qwen-plus --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --execute
+python -X utf8 -m tracelab.stage3 --provider bailian --model qwen-plus --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --execute
 ```
 
 本轮实际运行的是去掉--execute的本地准备命令。

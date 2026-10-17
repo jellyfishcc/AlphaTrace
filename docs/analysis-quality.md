@@ -76,7 +76,7 @@ full离线准备：outputs/stage3/20261016T133235-7074ac55c1，not_called。
 
 ```powershell
 cd D:\Projects\TraceLab
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.stage3 --provider bailian --model qwen-plus --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --analysis-mode focused --timeout-seconds 180 --max-output-tokens 3000 --execute
+python -X utf8 -m tracelab.stage3 --provider bailian --model qwen-plus --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --analysis-mode focused --timeout-seconds 180 --max-output-tokens 3000 --execute
 ```
 
 去掉--execute可只做本地准备。有条件进入下一次有限真实测试，但须用户重新明确授权；不能声称质量修复已由真实模型验证。

@@ -1,0 +1,14 @@
+{
+  "company": "珠海格力电器股份有限公司",
+  "period": "2025",
+  "base_period": "2024",
+  "metric_id": "net_profit",
+  "metric_name": "净利润",
+  "scope": "披露口径的合并报表；合并范围变动，非恒定主体比较",
+  "comparison_basis": "yoy",
+  "value_kind": "change_magnitude",
+  "value": "35.0832",
+  "unit": "亿元",
+  "direction": "增长",
+  "original_text": "格力2025年净利润较2024年增长35.0832亿元。"
+}

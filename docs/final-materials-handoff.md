@@ -8,7 +8,7 @@
 
 - 新快照：`outputs/final_release/20261017T001129-fb6ba35805/`
 - 最终附件原样副本：该目录 `inputs/格力电器金融组核验分析报告_最终版.docx` 和 `inputs/格力电器金融组核验分析底稿_最终版.xlsx`。
-- 附件原始位置：用户提供的微信临时目录 `D:/Downloads/Wechat Files/xwechat_files/wxid_tj9nsz4aymqs12_87a4/temp/RWTemp/2026-10/626a979aaa90ddffbe4f357680f0a341/`。
+- 附件原始位置：用户提供的微信临时目录 `<本地附件目录，交付版已脱敏>`。
 - 来源及文件哈希：`inventory.json`；快照完整性：`release_hashes.json`。
 - 新旧对照：`comparison.csv` / `comparison.json`；冲突：`conflicts.json`；待处理：`pending_questions.md`。
 - 计算输入：`normalized/financial.csv`、`cash.csv`、`metadata.json`；结果：`metrics.json`、`cash_metrics.json`。
@@ -82,7 +82,7 @@ Mock 运行 4 轮、3 次本地工具调用，状态 pending_human_review、simu
 在项目根目录 PowerShell 执行（只离线运行）：
 
 ```powershell
-$py = 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+$py = 'python'
 $env:TEMP = 'D:\Projects\TraceLab\tmp'
 $env:TMP = 'D:\Projects\TraceLab\tmp'
 & $py -X utf8 -m unittest discover -s tests -v

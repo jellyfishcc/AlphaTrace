@@ -33,7 +33,7 @@
 ## 离线运行
 
 ```powershell
-$py = 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+$py = 'python'
 & $py -X utf8 -m tracelab.agent_preflight --stage2-run outputs/final_revision/20261017T093152-d80de1cefa
 ```
 

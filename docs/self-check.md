@@ -46,7 +46,7 @@ python -X utf8 scripts/verify_stage2_run.py outputs/stage2/20261016T053315-83447
 仅在本地重新准备第三阶段，不发送模型请求：
 
 ```powershell
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.stage3 --stage2-run outputs/stage2/20261016T053315-83447d4dedf0
+python -X utf8 -m tracelab.stage3 --stage2-run outputs/stage2/20261016T053315-83447d4dedf0
 ```
 
 命令会打印新output目录，打开那个目录的manifest.json检查，不要误看旧运行。

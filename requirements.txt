@@ -1,0 +1,2 @@
+# Complete runtime/test dependency set; stage one and simulated checker use stdlib.
+-r requirements-stage2.txt

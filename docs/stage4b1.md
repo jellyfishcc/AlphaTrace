@@ -55,7 +55,7 @@ Mock 联合流程保存于 `outputs/agent/20261017T005337-6f56ba146a/`：
 测试日志：`outputs/stage4b1/20261017/tests.log`。新克隆缺少私有快照时，既有最终版集成类和本阶段真实快照集成类会明确跳过，必须单独报告跳过，不能算通过。
 
 ```powershell
-$py = 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+$py = 'python'
 $env:TEMP = 'D:\Projects\TraceLab\tmp'
 $env:TMP = $env:TEMP
 & $py -X utf8 -m unittest discover -s tests -v

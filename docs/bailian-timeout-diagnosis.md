@@ -64,7 +64,7 @@ qwen-plus，北京既有端点，180秒套接字操作超时；输出最多3000 
 
 ```powershell
 cd D:\Projects\TraceLab
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.stage3 --provider bailian --model qwen-plus --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --timeout-seconds 180 --execute
+python -X utf8 -m tracelab.stage3 --provider bailian --model qwen-plus --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --timeout-seconds 180 --execute
 ```
 
 只在明确许可后执行。去掉--execute即为无费用本地准备，本轮只执行了该准备。

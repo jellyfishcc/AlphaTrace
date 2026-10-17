@@ -68,7 +68,7 @@ LiveBailianTransport 构造必须显式 authorized=True；配置和密钥只在�
 日志：`outputs/stage4b2a/20261017/tests.log`。私有快照在本机存在并参与集成测试；干净克隆缺失时原有集成类会明确跳过。
 
 ```powershell
-$py = 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe'
+$py = 'python'
 $env:TEMP = 'D:\Projects\TraceLab\tmp'
 $env:TMP = $env:TEMP
 & $py -X utf8 -m unittest discover -s tests -v

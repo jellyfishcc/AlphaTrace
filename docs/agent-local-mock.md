@@ -39,7 +39,7 @@ Decider.decide(state)是可替换决策接口。state包含计算信号产生的
 
 ```powershell
 cd D:\Projects\TraceLab
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.agent --stage2-run outputs/stage2/20261016T053315-83447d4dedf0
+python -X utf8 -m tracelab.agent --stage2-run outputs/stage2/20261016T053315-83447d4dedf0
 ```
 
 实际输出outputs/agent/20261016T140940-ee9d2b94f0。

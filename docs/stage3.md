@@ -18,7 +18,7 @@
 在仓库根目录执行。Python环境需已安装requirements-stage2.txt；本机可用内置运行时：
 
 ```powershell
-& 'C:\Users\65751\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -X utf8 -m tracelab.stage3 --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --execute
+python -X utf8 -m tracelab.stage3 --stage2-run outputs/stage2/20261016T053315-83447d4dedf0 --execute
 ```
 
 普通环境：

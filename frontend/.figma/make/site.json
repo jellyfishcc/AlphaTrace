@@ -1,0 +1,10 @@
+{
+  "description": "Converts markdown files into an interactive frontend for TraceLab products, enabling users to visualize and manage content efficiently.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

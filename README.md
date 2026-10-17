@@ -35,6 +35,8 @@
 
 ## 本地运行与验证
 
+2026-10-18 前端离线集成：已有 `frontend/` React 页面通过白名单 JSON 展示真实财务金额、公开来源证据和历史 Agent 失败轨迹。运行 `cd frontend; pnpm dev` 后访问 `http://localhost:8443/`。需要先在本机生成展示包，完整命令与缺失状态说明见[前端离线数据集成](docs/frontend-offline-integration.md)。不启动 Python Web 服务，不调用模型；页面保留真实 `validation_failed`，示例与真实数据隔离。
+
 2026-10-18 补充：第一模块已有受限的原生文字 PDF 合并利润表提取入口。实际从格力 2025 年报 PDF 第 88 页（印刷第 87 页）读取五个科目的两年金额，输出精确 JSON/CSV 与独立来源核验结果。金额不从旧底稿复制；不使用 LLM/OCR，不代表任意 PDF 通用解析。见[PDF 提取运行与边界](docs/pdf-extraction.md)。
 
 ```powershell

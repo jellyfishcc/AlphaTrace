@@ -1,0 +1,87 @@
+import type { CaseRecord } from '@/types'
+
+const sharedRun = {
+  company: '华岭电器（示例）',
+  ticker: '000000.SZ',
+  basePeriod: '2022 年度',
+  currentPeriod: '2023 年度',
+  scope: '合并报表',
+  source: '本地示例数据',
+  backendRunAt: '2024-04-18 09:42',
+  isExample: true,
+} as const
+
+export const exampleCases: CaseRecord[] = [
+  {
+    id: 'case-demo-main',
+    question: '利润下降，经营现金流增长，两者为何出现分化？',
+    pendingCount: 4,
+    run: {
+      ...sharedRun,
+      id: 'RUN-DEMO-042',
+      label: '调查回放 · 第 2 版',
+      materialVersion: 'v2024.04-r2',
+      mode: 'qwen_replay',
+      status: 'pending_human_review',
+      statusLabel: '调查结果待人工复核',
+      importedAt: '2024-04-18 10:16',
+    },
+    metrics: [
+      { id: 'operating_profit', name: '营业利润', level: 0, base: '12.84 亿元', current: '9.76 亿元', delta: '−3.08 亿元', yoy: '−23.99%', impact: '−3.08 亿元', relation: '利润起点', residual: '0 元', status: '计算已闭合', source: 'metrics.json' },
+      { id: 'revenue', name: '营业收入', level: 1, parent: 'operating_profit', base: '186.21 亿元', current: '178.36 亿元', delta: '−7.85 亿元', yoy: '−4.22%', impact: '−7.85 亿元', relation: '+ 收入', residual: '—', status: '来源已记录', source: 'metrics.json' },
+      { id: 'total_cost', name: '营业总成本', level: 1, parent: 'operating_profit', base: '174.66 亿元', current: '169.92 亿元', delta: '−4.74 亿元', yoy: '−2.71%', impact: '+4.74 亿元', relation: '− 成本', residual: '—', status: '可展开', source: 'bridges.json', expandable: true },
+      { id: 'operating_cost', name: '营业成本', level: 2, parent: 'total_cost', base: '142.08 亿元', current: '139.24 亿元', delta: '−2.84 亿元', yoy: '−2.00%', impact: '+2.84 亿元', relation: '− 成本', residual: '—', status: '已核验', source: 'directional_impacts.csv' },
+      { id: 'selling_expense', name: '销售费用', level: 2, parent: 'total_cost', base: '15.42 亿元', current: '14.90 亿元', delta: '−0.52 亿元', yoy: '−3.37%', impact: '+0.52 亿元', relation: '− 费用', residual: '—', status: '已核验', source: 'directional_impacts.csv' },
+      { id: 'admin_expense', name: '管理费用', level: 2, parent: 'total_cost', base: '8.36 亿元', current: '9.74 亿元', delta: '+1.38 亿元', yoy: '+16.51%', impact: '−1.38 亿元', relation: '− 费用', residual: '—', status: '待调查', source: 'directional_impacts.csv' },
+      { id: 'profit_total', name: '利润总额', level: 0, base: '13.02 亿元', current: '9.92 亿元', delta: '−3.10 亿元', yoy: '−23.81%', impact: '−3.10 亿元', relation: '营业利润 + 营业外净额', residual: '0 元', status: '计算已闭合', source: 'metrics.json' },
+      { id: 'net_profit', name: '合并净利润', level: 0, base: '10.11 亿元', current: '7.48 亿元', delta: '−2.63 亿元', yoy: '−26.01%', impact: '−2.63 亿元', relation: '利润总额 − 所得税', residual: '0 元', status: '计算已闭合', source: 'metrics.json' },
+      { id: 'minority', name: '少数股东损益', level: 1, parent: 'net_profit', base: '0.38 亿元', current: '0.51 亿元', delta: '+0.13 亿元', yoy: '+34.21%', impact: '−0.13 亿元', relation: '归母衔接项', residual: '—', status: '来源已记录', source: 'metrics.json' },
+      { id: 'parent_profit', name: '归母净利润', level: 0, base: '9.73 亿元', current: '6.97 亿元', delta: '−2.76 亿元', yoy: '−28.37%', impact: '−2.76 亿元', relation: '净利润 − 少数股东损益', residual: '0 元', status: '计算已闭合', source: 'metrics.json' },
+    ],
+    cashMetrics: [
+      { id: 'cash_in', name: '经营现金流入', level: 0, base: '201.46 亿元', current: '215.83 亿元', delta: '+14.37 亿元', yoy: '+7.13%', impact: '+14.37 亿元', relation: '+ 流入', residual: '—', status: '部分项目', source: 'cash_metrics.json', expandable: true },
+      { id: 'cash_sales', name: '销售商品、提供劳务收到的现金', level: 1, parent: 'cash_in', base: '193.20 亿元', current: '207.44 亿元', delta: '+14.24 亿元', yoy: '+7.37%', impact: '+14.24 亿元', relation: '+ 流入', residual: '—', status: '来源已记录', source: 'cash_metrics.json' },
+      { id: 'cash_out', name: '经营现金流出', level: 0, base: '192.07 亿元', current: '201.31 亿元', delta: '+9.24 亿元', yoy: '+4.81%', impact: '−9.24 亿元', relation: '− 流出', residual: '—', status: '部分项目', source: 'cash_metrics.json', expandable: true },
+      { id: 'cash_purchase', name: '购买商品、接受劳务支付的现金', level: 1, parent: 'cash_out', base: '146.82 亿元', current: '150.20 亿元', delta: '+3.38 亿元', yoy: '+2.30%', impact: '−3.38 亿元', relation: '− 流出', residual: '—', status: '来源已记录', source: 'cash_metrics.json' },
+      { id: 'operating_cash', name: '经营活动现金流量净额', level: 0, base: '9.39 亿元', current: '14.52 亿元', delta: '+5.13 亿元', yoy: '+54.63%', impact: '+5.13 亿元', relation: '流入 − 流出', residual: '0 元', status: '直接法已闭合', source: 'cash_bridges.json' },
+    ],
+    evidence: [
+      { id: 'E12_A', fileName: '示例年度报告_2023.pdf', quote: '本年度公司适度调整回款政策，加强应收账款分级管理；销售商品、提供劳务收到的现金较上年增加。', summary: '披露内容提及回款管理及销售收现增加。', printPage: '第 48 页', pdfPage: 'PDF 52', metrics: ['operating_cash', 'cash_sales'], basis: '本期及同比', verification: '后端记录：定位已通过', supportLimit: '可支持回款管理动作与销售收现增加的披露事实，不能单独证明现金流增长的全部原因。' },
+      { id: 'F_FINAL_03', fileName: '示例年度报告_2023.pdf', quote: '报告期内，管理费用增加主要受信息系统建设投入及相关专业服务支出影响。', summary: '披露内容将管理费用增加与系统建设及专业服务支出关联。', printPage: '第 121 页', pdfPage: 'PDF 126', metrics: ['admin_expense', 'operating_profit'], basis: '2023 年度同比', verification: '后端记录：文本与页码已匹配', supportLimit: '支持管理费用变动的披露解释，不等于已量化其对营业利润下降的全部贡献。' },
+      { id: 'E07_COST', fileName: '示例财务报表附注.pdf', quote: '主要成本项目的分类口径在报告期内保持一致。', summary: '附注披露成本分类口径保持一致。', printPage: '第 86 页', pdfPage: 'PDF 91', metrics: ['total_cost', 'operating_cost'], basis: '两期比较', verification: '后端记录：来源存在冲突', supportLimit: '仅支持分类口径描述；另一份来源的附注版本号不同，需人工确认。' },
+    ],
+    explanations: [
+      { id: 'EXP-01', statement: '营业收入减少对营业利润形成负向影响，营业总成本下降仅部分抵消该影响。', kind: 'accounting_fact', metrics: ['revenue', 'total_cost', 'operating_profit'], citations: [], amounts: ['−7.85 亿元', '+4.74 亿元'], supportLimit: '这是会计拆解关系，计算闭合不代表经营原因已经查明。', comparisonBasis: '2023 年度较 2022 年度', accountingLinks: '营业收入变动 + 营业总成本对利润影响 → 营业利润变动（部分项目）', checkStatus: '金额检查通过 · 待人工复核' },
+      { id: 'EXP-02', statement: '销售收现增加与经营现金流净额增长方向一致，披露提及公司加强回款管理。', kind: 'disclosure_explanation', metrics: ['operating_cash', 'cash_sales'], citations: ['E12_A'], amounts: ['+14.24 亿元', '+5.13 亿元'], supportLimit: '证据支持披露事实与方向关系，不足以确认完整因果或评价盈利质量。', comparisonBasis: '2023 年度较 2022 年度', accountingLinks: '销售收现属于经营现金流入分项', checkStatus: '结构检查通过 · 待人工复核' },
+      { id: 'EXP-03', statement: '收入下降可能与特定业务板块需求变化有关。', kind: 'hypothesis', metrics: ['revenue', 'operating_profit'], citations: [], amounts: ['−7.85 亿元'], supportLimit: '当前未找到可定位原文，不可作为结论。', comparisonBasis: '2023 年度较 2022 年度', accountingLinks: '未提供', checkStatus: '证据不足' },
+    ],
+    steps: [
+      { round: 1, action: 'facts_list', label: '查看可查询的财务事实', summary: '返回 11 个利润与现金流相关事实。', params: '{"scope":"income,cashflow"}', result: '已返回事实目录，包含营业利润、归母净利润及经营活动现金流量净额。', links: ['operating_profit', 'operating_cash'] },
+      { round: 1, action: 'fact_get', label: '读取利润与现金流核心事实', summary: '读取两期金额、差额及同比字段。', params: '{"metric_ids":["parent_profit","operating_cash"]}', result: '归母净利润减少 2.76 亿元；经营现金流净额增加 5.13 亿元。', links: ['parent_profit', 'operating_cash'] },
+      { round: 2, action: 'search', label: '检索回款及管理费用相关披露', summary: '本地证据检索命中 3 个片段。', params: '{"queries":["回款","管理费用增加"]}', result: '命中 E12_A、F_FINAL_03 及 1 个低相关片段。', links: ['E12_A', 'F_FINAL_03'] },
+      { round: 2, action: 'get', label: '读取证据原文与来源定位', summary: '读取 2 条证据的原文、文件名及页码。', params: '{"evidence_ids":["E12_A","F_FINAL_03"]}', result: '两条证据均返回原文和来源定位；E12_A 的支持边界需要保留。', links: ['E12_A', 'F_FINAL_03'] },
+      { round: 3, action: 'explain', label: '提交候选解释', summary: '生成 3 条候选内容，其中 1 条证据不足。', params: '{"explanation_count":3}', result: '结构检查完成；EXP-03 缺少可定位引文，被标记为证据不足。', links: ['EXP-01', 'EXP-02', 'EXP-03'] },
+      { round: 3, action: 'stop', label: '结束本次调查', summary: '达到本次预设回放的轮数上限。', params: '{"reason":"round_limit"}', result: '调查因达到轮数上限停止，不表示全部证据已经查完。', links: [] },
+    ],
+  },
+  {
+    id: 'case-demo-v1',
+    question: '利润层级变化由哪些会计项目形成？',
+    pendingCount: 7,
+    run: {
+      ...sharedRun,
+      id: 'RUN-DEMO-031',
+      label: '阶段三检查 · 第 1 版',
+      materialVersion: 'v2024.03-r1',
+      mode: 'preset_mock',
+      status: 'validation_failed',
+      statusLabel: '检查未通过',
+      importedAt: '2024-04-02 15:28',
+    },
+    metrics: [],
+    cashMetrics: [],
+    evidence: [],
+    explanations: [],
+    steps: [],
+  },
+]

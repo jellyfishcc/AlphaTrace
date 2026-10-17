@@ -1,0 +1,325 @@
+{
+  "description": "真实失败记录的脱敏字段摘录；仅记录动作和上下文标识，不含密钥、请求ID、内部附件或金额。不是新模型运行。",
+  "source_run": "20261017T095133-282a117e04",
+  "rounds": [
+    {
+      "round": 1,
+      "record_sha256": "22bdf524f51912df241a8686373cad6a6825d5fe4b4f82a2f8ced0a2e4327a50",
+      "initial_fact_ids": [
+        "net_profit",
+        "operating_cashflow",
+        "cash_2",
+        "cash_6"
+      ],
+      "initial_amount_fields": {
+        "net_profit": [
+          "base",
+          "current",
+          "change"
+        ],
+        "operating_cashflow": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_2": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_6": [
+          "base",
+          "current",
+          "change"
+        ]
+      },
+      "queried_fact_ids": [],
+      "history": [],
+      "remaining": {
+        "rounds": 5,
+        "tool_calls": 4,
+        "model_requests": 5,
+        "conservative_token_budget": 60000
+      },
+      "omissions": [],
+      "action": {
+        "action": "fact_get",
+        "arguments": {
+          "fact_id": "cash_2"
+        }
+      },
+      "error": null
+    },
+    {
+      "round": 2,
+      "record_sha256": "2918db7b55dd142f3ed4f5b2e8fdb9cf548af10f96f952689b052315b547b6de",
+      "initial_fact_ids": [
+        "net_profit",
+        "operating_cashflow",
+        "cash_2",
+        "cash_6"
+      ],
+      "initial_amount_fields": {
+        "net_profit": [
+          "base",
+          "current",
+          "change"
+        ],
+        "operating_cashflow": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_2": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_6": [
+          "base",
+          "current",
+          "change"
+        ]
+      },
+      "queried_fact_ids": [
+        "cash_2"
+      ],
+      "history": [
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_2"
+          }
+        }
+      ],
+      "remaining": {
+        "rounds": 4,
+        "tool_calls": 3,
+        "model_requests": 4,
+        "conservative_token_budget": 50814
+      },
+      "omissions": [],
+      "action": {
+        "action": "fact_get",
+        "arguments": {
+          "fact_id": "cash_6"
+        }
+      },
+      "error": null
+    },
+    {
+      "round": 3,
+      "record_sha256": "7eda3f137bf9973eaa337001f207e57e010cdaed32329dadd4e1811511a8b375",
+      "initial_fact_ids": [
+        "net_profit",
+        "operating_cashflow",
+        "cash_2",
+        "cash_6"
+      ],
+      "initial_amount_fields": {
+        "net_profit": [
+          "base",
+          "current",
+          "change"
+        ],
+        "operating_cashflow": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_2": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_6": [
+          "base",
+          "current",
+          "change"
+        ]
+      },
+      "queried_fact_ids": [
+        "cash_2",
+        "cash_6"
+      ],
+      "history": [
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_2"
+          }
+        },
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_6"
+          }
+        }
+      ],
+      "remaining": {
+        "rounds": 3,
+        "tool_calls": 2,
+        "model_requests": 3,
+        "conservative_token_budget": 40959
+      },
+      "omissions": [],
+      "action": {
+        "action": "fact_get",
+        "arguments": {
+          "fact_id": "net_profit"
+        }
+      },
+      "error": null
+    },
+    {
+      "round": 4,
+      "record_sha256": "e9d2e70916c4e2fee5681e4480c5ea428ec283d0e4352931b9f0e0f9afa5038c",
+      "initial_fact_ids": [
+        "net_profit",
+        "operating_cashflow",
+        "cash_2",
+        "cash_6"
+      ],
+      "initial_amount_fields": {
+        "net_profit": [
+          "base",
+          "current",
+          "change"
+        ],
+        "operating_cashflow": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_2": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_6": [
+          "base",
+          "current",
+          "change"
+        ]
+      },
+      "queried_fact_ids": [
+        "cash_6",
+        "net_profit"
+      ],
+      "history": [
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_2"
+          }
+        },
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_6"
+          }
+        },
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "net_profit"
+          }
+        }
+      ],
+      "remaining": {
+        "rounds": 2,
+        "tool_calls": 1,
+        "model_requests": 2,
+        "conservative_token_budget": 30435
+      },
+      "omissions": [
+        "earlier_fact_details"
+      ],
+      "action": {
+        "action": "fact_get",
+        "arguments": {
+          "fact_id": "operating_cashflow"
+        }
+      },
+      "error": null
+    },
+    {
+      "round": 5,
+      "record_sha256": "d30200488a73dbe682c0b63d2f1a28bd24586142e993160e2b1d1261d3d8b055",
+      "initial_fact_ids": [
+        "net_profit",
+        "operating_cashflow",
+        "cash_2",
+        "cash_6"
+      ],
+      "initial_amount_fields": {
+        "net_profit": [
+          "base",
+          "current",
+          "change"
+        ],
+        "operating_cashflow": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_2": [
+          "base",
+          "current",
+          "change"
+        ],
+        "cash_6": [
+          "base",
+          "current",
+          "change"
+        ]
+      },
+      "queried_fact_ids": [
+        "net_profit",
+        "operating_cashflow"
+      ],
+      "history": [
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_2"
+          }
+        },
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "cash_6"
+          }
+        },
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "net_profit"
+          }
+        },
+        {
+          "action": "fact_get",
+          "arguments": {
+            "fact_id": "operating_cashflow"
+          }
+        }
+      ],
+      "remaining": {
+        "rounds": 1,
+        "tool_calls": 0,
+        "model_requests": 1,
+        "conservative_token_budget": 19879
+      },
+      "omissions": [
+        "earlier_fact_details"
+      ],
+      "action": {
+        "action": "fact_get",
+        "arguments": {
+          "fact_id": "cash_2"
+        }
+      },
+      "error": "repeated_action"
+    }
+  ]
+}

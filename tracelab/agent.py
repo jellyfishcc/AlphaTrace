@@ -231,6 +231,10 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
     result.update(runtime())
     result['rounds']=index+1
     result['retrieved_evidence_ids']=sorted(seen)
+    result['retrieval_audit']=[dict(action=h['action'],arguments=h['arguments'],
+        evidence_ids=[e['evidence_id'] for e in h['result']] if h['action']=='search' else [h['result']['evidence_id']])
+        for h in state['history'] if h['action'] in ('search','get')]
+    result['evidence_gap']=result['stop_reason'] if result['status']=='insufficient_evidence' else None
     write(out/'result.json',result)
     write(out/'manifest.json',dict(run_id=out.name,**runtime(),status=result['status'],
           decision_source=type(decider).__name__,code_sha256=sha(__file__)))

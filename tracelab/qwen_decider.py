@@ -129,6 +129,9 @@ class QwenDecider:
         for h in state.get('history',[]):
             action=h['action'];args=h['arguments'];value=h['result']
             history.append({'action':action,'arguments':{k:v for k,v in args.items() if k in ('fact_id','evidence_id','metric_id','question_index','query')}})
+            if action=='search':
+                history[-1]['result_evidence_ids']=[e['evidence_id'] for e in value if e.get('evidence_id') in self.evidence]
+                history[-1]['result_count']=len(history[-1]['result_evidence_ids'])
             if action=='fact_get' and args.get('fact_id') in self.facts:
                 key=args['fact_id'];selected_facts[key]=self.facts[key]
             if action in ('search','get'):
@@ -157,6 +160,7 @@ class QwenDecider:
             remaining={**state.get('remaining',{}),'model_requests':self.budget.max_requests-self.attempts,
                        'conservative_token_budget':self.budget.total_tokens-self.charged},
             omissions=omitted,note='目录只含允许外发子集，省略不表示不存在；文字截断已标记，必要原文不足则停止或查询其他相关证据。')
+        context['progress']=self.progress(state)
         if self.initial_fact_ids:
             context['initial_facts']=[{**{k:self.facts[fid][k] for k in ('fact_id','name','periods','financial_level','availability','evidence_ids')},
                 'amounts':{field:{'元':units['元']} for field,units in self.facts[fid]['amounts'].items()},
@@ -166,6 +170,32 @@ class QwenDecider:
         if len(state['goal'])>500:context['omissions'].append('goal_tail')
         if len(state.get('questions',[]))>4:context['omissions'].append('later_questions')
         return context
+
+    def progress(self,state):
+        """Complete ID ledger, independent of truncated details and recent history."""
+        history=state.get('history',[])
+        queried={h['arguments']['fact_id'] for h in history
+                 if h['action']=='fact_get' and h['arguments'].get('fact_id') in self.facts}
+        available=set(self.initial_fact_ids)|queried
+        retrieved=set();read_ids=set();searches=[]
+        for h in history:
+            if h['action']=='search':
+                ids=[e['evidence_id'] for e in h['result'] if e.get('evidence_id') in self.evidence]
+                retrieved.update(ids)
+                searches.append(dict(arguments={k:v for k,v in h['arguments'].items()
+                    if k in ('query','metric_id','question_index')},result_evidence_ids=ids))
+            elif h['action']=='get' and h['arguments'].get('evidence_id') in self.evidence:
+                read_ids.add(h['arguments']['evidence_id']);retrieved.add(h['arguments']['evidence_id'])
+        reserve=0 if read_ids else 1 if retrieved else 2
+        remaining=state.get('remaining',{})
+        terminal=min(remaining.get('rounds',20),self.budget.max_requests-self.attempts)<=1 or remaining.get('tool_calls',20)==0
+        return dict(initial_fact_ids=list(self.initial_fact_ids),queried_fact_ids=sorted(queried),
+            available_fact_ids=sorted(available),unqueried_fact_ids=sorted(set(self.facts)-queried),
+            fact_get_allowed_ids=sorted(set(self.facts)-available),do_not_query_fact_ids=sorted(available),
+            retrieved_evidence_ids=sorted(retrieved),read_evidence_ids=sorted(read_ids),searches=searches,
+            reserved_evidence_tool_calls=reserve,terminal_action_required=terminal,
+            next_step=('explain_or_stop' if terminal or read_ids else 'get_or_stop' if retrieved else 'search_or_stop'),
+            guidance='已有事实直接复用；仅缺失的必要事实可查询。保留证据工具和最终解释/停止的一轮；未查询不等于未提供。')
 
     def check_action(self,value,state):
         if not isinstance(value,dict) or set(value)!={'action','arguments'}: raise DecisionFailure('invalid_action_structure')
@@ -192,6 +222,21 @@ class QwenDecider:
                 if any(c['evidence_id'] not in self.evidence for c in claim['citations']):raise DecisionFailure('unauthorized_evidence')
         signature=digest(value)
         if action not in ('stop','explain') and signature in self.signatures:raise DecisionFailure('repeated_action')
+        progress=self.progress(state)
+        if action=='fact_get' and args['fact_id'] in progress['do_not_query_fact_ids']:
+            raise DecisionFailure('fact_already_available')
+        # decide() has already counted this response's request. A final request may
+        # explain/stop, but cannot spend the last decision on another tool.
+        if action not in ('stop','explain'):
+            remaining=state.get('remaining',{})
+            if remaining.get('tool_calls',20)<=0:raise DecisionFailure('tool_budget_exhausted')
+            if remaining.get('rounds',20)<=1 or self.attempts>=self.budget.max_requests:
+                raise DecisionFailure('terminal_decision_required')
+            if action in ('fact_get','facts_list','list'):
+                reserve=progress['reserved_evidence_tool_calls']
+                if remaining.get('tool_calls',20)<=reserve or min(
+                        remaining.get('rounds',20)-1,self.budget.max_requests-self.attempts)<=reserve:
+                    raise DecisionFailure('evidence_budget_reserved')
         self.signatures.add(signature)
         return value
 

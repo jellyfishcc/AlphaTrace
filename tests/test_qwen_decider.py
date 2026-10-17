@@ -86,7 +86,10 @@ class QwenTests(unittest.TestCase):
     def test_request_and_token_budgets(self):
         action={'action':'list','arguments':{}}
         r,d,_,_=self.run_agent([reply(action),reply(self.stop)],budget=Budget(max_requests=1))
-        self.assertEqual(d.attempts,1);self.assertIn('request_budget_exhausted',r['errors'])
+        self.assertEqual(d.attempts,1);self.assertIn('terminal_decision_required',r['errors'])
+        d=self.decider([reply(self.stop)],budget=Budget(max_requests=1))
+        d.decide(self.state)
+        with self.assertRaisesRegex(DecisionFailure,'request_budget_exhausted'):d.decide(self.state)
         for budget in (Budget(total_tokens=1),Budget(max_input_bytes=1)):
             r,d,_,_=self.run_agent([reply(self.stop)],budget=budget)
             self.assertEqual(d.attempts,0);self.assertFalse(r['llm_called'])

@@ -93,7 +93,8 @@ def validate(response, payload):
         if c['kind']=='accounting_fact' and re.search('由于|导致|造成|因为|主要原因',c['statement']):
             review.append(label+'会计事实含因果措辞，需人工复核')
         if c['kind']=='disclosure_explanation':
-            if not any(e['evidence_id'].startswith('E07_') for e in cited): errors.append(label+'披露解释缺少经营披露原文')
+            from .source_contract import disclosure_errors
+            errors.extend(label+e for e in disclosure_errors(c,cited,payload))
             if '年报' not in c['statement']: review.append(label+'应明确解释来自年报披露')
         review.append(label+'：人工检查引文是否实际支持结论、有无扩大因果范围及混淆本期与同比')
     free=[q for q in response['questions']]+[c[k] for c in response['claims'] for k in ('statement','support_limit')]

@@ -308,6 +308,10 @@ def load_agent_payload(folder):
         checks=[c for c in read(folder/'source_checks.json') if c['metric_name']==m['item_name']]
         if len(checks)!=3 or any(c['status']!='exact_match' for c in checks): continue
         c=next(c for c in checks if c['fiscal_year']==2025)
+        for check in checks:
+            field='base_amount' if check['fiscal_year']==2024 else 'current_amount'
+            if num(m[field])!=num(check['pdf_yuan']): raise ValueError('新增事实金额与来源不符')
+        if num(m['current_amount'])-num(m['base_amount'])!=num(m['difference']): raise ValueError('新增事实差额不符')
         if c['original_text'] not in (pdf.pages[c['pdf_page']-1].extract_text() or ''): raise ValueError('新增事实原文不符')
         eid='F_FINAL_'+m['item_id']
         payload['evidence'].append(dict(evidence_id=eid,text=c['original_text'],related_facts=[m['item_id']],
@@ -318,6 +322,9 @@ def load_agent_payload(folder):
     for m in read(folder/'cash_metrics.json'):
         if m['status']!='calculated' or m['item_id']=='cash_16': continue
         c=next(c for c in read(folder/'cash_checks.json') if c['item_id']==m['item_id'])
+        if [num(m[k]) for k in ('base_amount','current_amount')]!=[num(v) for v in c['pdf']]:
+            raise ValueError('现金流事实金额与来源不符')
+        if num(m['current_amount'])-num(m['base_amount'])!=num(m['difference']): raise ValueError('现金流差额不符')
         if 'conflict' in c['status'] or c['text'] not in (pdf.pages[c['pdf_page']-1].extract_text() or ''):
             raise ValueError('现金流分项未获核验')
         eid='F_FINAL_'+m['item_id']
@@ -327,6 +334,8 @@ def load_agent_payload(folder):
             field:{'元':m[value],'亿元':display_yi(num(m[value]))} for field,value in
             [('base','base_amount'),('current','current_amount'),('change','difference')]}))
     audit['extension_hashes']={name:sha(folder/name) for name in ('verified_evidence.json','cash_metrics.json','cash_checks.json')}
+    from .source_contract import bind_sources
+    bind_sources(payload,folder)
     return payload,audit
 
 

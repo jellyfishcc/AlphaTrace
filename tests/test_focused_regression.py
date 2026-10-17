@@ -11,6 +11,13 @@ class FocusedRegressionTests(unittest.TestCase):
         fixture=json.loads((Path(__file__).parent/'fixtures/qwen_focused_validation_failure.json').read_text(encoding='utf-8'))
         self.answer=fixture['analysis']
         self.payload=fixture['input']
+        # Synthetic loader receipt for these existing validator-only variants.
+        # The immutable historical fixture is NOT retroactively marked verified.
+        from tracelab.source_contract import digest
+        self.payload['source_contract']={'evidence':{
+            e['evidence_id']:{'source_kind':'annual_report','file_sha256':'0'*64,
+                'evidence_sha256':digest(e),'allowed_bases':[e['comparison_basis']]}
+            for e in self.payload['evidence']}}
 
     def corrected_variant(self):
         answer=copy.deepcopy(self.answer)

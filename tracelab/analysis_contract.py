@@ -87,10 +87,7 @@ def check_contract(response,payload):
                 errors.append(label+'会计影响方向与Python已核验结果不一致')
             if link['component'] not in claim['metric_ids'] or link['target'] not in claim['metric_ids']:
                 errors.append(label+'会计关系未关联所引用项目')
-        if claim['kind']=='disclosure_explanation':
-            cited=[evidence[c['evidence_id']] for c in claim['citations'] if c['evidence_id'] in evidence and c['evidence_id'].startswith('E07_')]
-            if not cited or any(e.get('comparison_basis')!=claim['comparison_basis'] for e in cited):
-                errors.append(label+'披露比较口径与引文不一致；请分开本期差异与同比解释')
+        # Source provenance and comparison scope are checked centrally by stage3.
         review.append(label+'：核对文字是否与结构化会计关系一致；空accounting_links不证明文字没有会计错误')
         review.append(label+'：核对假设、因果强度及保证金口径；不允许未经Python核验的贡献率')
     return errors,review

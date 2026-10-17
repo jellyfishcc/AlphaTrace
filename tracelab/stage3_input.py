@@ -116,6 +116,8 @@ def prepare(folder, mode='full'):
                excluded=excluded, external_content='仅通过核验的公开年报数值及必要原文；金融组内部文档和摘要不外发')
     from .analysis_contract import configure
     payload,contract_hashes=configure(payload,folder,mode)
+    from .source_contract import bind_sources
+    bind_sources(payload,folder)
     audit['input_hashes'].update(contract_hashes)
     audit['analysis_mode']=mode
     return payload,audit

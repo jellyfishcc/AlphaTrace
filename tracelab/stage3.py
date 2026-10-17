@@ -13,10 +13,12 @@ from pathlib import Path
 from urllib import request, error
 
 from .stage3_input import prepare, read, sha
+from .bailian import configuration, chat_body, as_response
+from .analysis_contract import check_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 ENDPOINT = 'https://api.openai.com/v1/responses'
-PROMPT_VERSION = 'evidence_v1'
+PROMPT_VERSION = 'evidence_v3'
 
 
 def obj(fields):
@@ -36,6 +38,12 @@ SCHEMA = obj({'claims':arr(obj({
                        'unit':{'type':'string','enum':['元','亿元']},'value':STR})),
     'support_limit':STR})), 'questions':arr(STR)})
 
+# Versioned extension: legacy saved responses still use SCHEMA unchanged.
+SCHEMA_V2 = obj({'claims':arr(obj({**SCHEMA['properties']['claims']['items']['properties'],
+    'accounting_links':arr(obj({'target':STR,'component':STR,
+        'effect':{'type':'string','enum':['increase','decrease','unchanged']}})),
+    'comparison_basis':{'type':'string','enum':['yoy','current_period','none']}})), 'questions':arr(STR)})
+
 
 def schema_errors(value, schema, path='response'):
     kind=schema['type']
@@ -50,7 +58,8 @@ def schema_errors(value, schema, path='response'):
 
 
 def validate(response, payload):
-    errors=schema_errors(response,SCHEMA)
+    modern=payload.get('analysis_contract',{}).get('version')=='v2'
+    errors=schema_errors(response,SCHEMA_V2 if modern else SCHEMA)
     review=[]
     if errors: return dict(status='failed',errors=errors,manual_review=review)
     facts={f['fact_id']:f for f in payload['facts']}
@@ -90,6 +99,10 @@ def validate(response, payload):
     free=[q for q in response['questions']]+[c[k] for c in response['claims'] for k in ('statement','support_limit')]
     if any(re.search(r'\d|[零一二三四五六七八九十百千万亿两]+(?:元|亿元|%|％|百分之)',t) for t in free):
         errors.append('自由文本含未结构化数字，金额必须放入amounts供精确核验')
+    if modern:
+        extra,manual=check_contract(response,payload)
+        errors.extend(extra)
+        review.extend(manual)
     return dict(status='failed' if errors else 'needs_human_review', errors=errors, manual_review=review,
                 boundary='自动检查仅验证结构、数值、引用与部分措辞，不能证明经营因果或代替金融组验收')
 
@@ -112,11 +125,25 @@ class NoRedirect(request.HTTPRedirectHandler):
         return None
 
 
-def call_api(body,key):
-    req=request.Request(ENDPOINT,data=json.dumps(body,ensure_ascii=False).encode(),
+def call_api(body,key,endpoint=ENDPOINT,timeout=55,diagnostics=None):
+    diagnostics=diagnostics if diagnostics is not None else {}
+    diagnostics.update(phase='connect_or_wait_headers',http_status=None,request_id=None)
+    req=request.Request(endpoint,data=json.dumps(body,ensure_ascii=False).encode(),
                         headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'},method='POST')
-    with request.build_opener(NoRedirect).open(req,timeout=55) as result:
-        return json.loads(result.read()),result.headers.get('x-request-id')
+    try:
+        with request.build_opener(NoRedirect).open(req,timeout=timeout) as result:
+            status=getattr(result,'status',None)
+            diagnostics.update(phase='read_body',http_status=status if isinstance(status,int) else None,
+                               request_id=result.headers.get('x-request-id'))
+            content=result.read()
+            diagnostics['phase']='decode_json'
+            parsed=json.loads(content)
+            diagnostics['phase']='complete'
+            return parsed,diagnostics['request_id']
+    except error.HTTPError as exc:
+        diagnostics.update(phase='http_error',http_status=exc.code,
+                           request_id=exc.headers.get('x-request-id') if exc.headers else None)
+        raise
 
 
 def visible_response(raw):
@@ -129,6 +156,8 @@ def visible_response(raw):
                 elif c.get('type')=='refusal': messages.append({'type':'refusal','text':c.get('refusal','')})
     return dict(id=raw.get('id'),status=raw.get('status'),model=raw.get('model'),
                 usage=raw.get('usage'),messages=messages,
+                finish_reason=raw.get('finish_reason'),
+                incomplete_reason=(raw.get('incomplete_details') or {}).get('reason'),
                 incomplete=raw.get('incomplete_details') is not None)
 
 
@@ -151,34 +180,60 @@ def deliver(out, source, manifest):
     write(bundle/'file_hashes.json',index)
 
 
-def run(source, output, execute=False):
+def run(source, output, execute=False, provider='openai', model_override=None, timeout_seconds=55,
+        analysis_mode='full', max_output_tokens=3000):
+    if not 1<=timeout_seconds<=300:
+        raise ValueError('timeout_seconds必须在1至300秒之间')
+    if analysis_mode not in ('full','focused') or not 1<=max_output_tokens<=6000:
+        raise ValueError('分析模式无效或输出上限不在1至6000之间')
     started=datetime.now(timezone.utc)
     run_id=started.strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:10]
     out=Path(output)/run_id
     out.mkdir(parents=True)
     key=os.environ.get('OPENAI_API_KEY','').strip()
     model=os.environ.get('TRACELAB_MODEL',os.environ.get('OPENAI_MODEL','')).strip()
+    endpoint=ENDPOINT
+    config=None
+    if provider=='bailian':
+        config=configuration(model_override) if model_override else configuration()
+        key,model,endpoint=config.key,config.model,config.endpoint
+    elif provider!='openai':
+        raise ValueError('未知模型服务')
+    elif model_override:
+        model=model_override
     events=[]
     manifest=dict(run_id=run_id,started_at=started.isoformat(),
                   local_date=started.astimezone(timezone(timedelta(hours=8))).date().isoformat(),
-                  status='preparing',llm_called=False,model=model or None, endpoint=ENDPOINT,
-                  prompt_version=PROMPT_VERSION,latency_seconds=None,usage=None,
+                  status='preparing',llm_called=False,model=model or None, endpoint=endpoint,provider=provider,
+                  prompt_version=PROMPT_VERSION,analysis_mode=analysis_mode,latency_seconds=None,usage=None,
+                  max_requests=1,retries=0,timeout_seconds=timeout_seconds,http_status=None,
                   code_hashes={p.name:sha(p) for p in Path(__file__).parent.glob('*.py')})
     def event(name,**data):
         events.append(dict(time=datetime.now(timezone.utc).isoformat(),event=name,**data))
     try:
-        payload,audit=prepare(source)
+        payload,audit=prepare(source) if analysis_mode=='full' else prepare(source,mode=analysis_mode)
+        schema=SCHEMA_V2 if payload.get('analysis_contract',{}).get('version')=='v2' else SCHEMA
         write(out/'input.json',payload)
         write(out/'input_audit.json',audit)
         prompt=(ROOT/'prompts'/f'{PROMPT_VERSION}.txt').read_text(encoding='utf-8')
         (out/'prompt.txt').write_text(prompt,encoding='utf-8')
-        body=dict(model=model or '<待配置模型>',store=False,max_output_tokens=3000,
+        body=dict(model=model or '<待配置模型>',store=False,max_output_tokens=max_output_tokens,
                   instructions=prompt,input=json.dumps(payload,ensure_ascii=False),
-                  text={'format':{'type':'json_schema','name':'tracelab_evidence','strict':True,'schema':SCHEMA}})
+                  text={'format':{'type':'json_schema','name':'tracelab_evidence','strict':True,'schema':schema}})
+        if provider=='bailian':
+            body=chat_body(model,prompt,json.dumps(payload,ensure_ascii=False,separators=(',',':')),max_output_tokens,schema)
+            prompt_bytes=sum(len(m['content'].encode('utf-8')) for m in body['messages'])
+            if prompt_bytes>32000:
+                raise ValueError('百炼有限分析输入超过32000字节，需缩小范围后复核')
+            manifest.update(input_utf8_bytes=prompt_bytes,input_byte_limit=32000,
+                            input_token_estimate_note='字节限制不是精确Token计数；实际用量由服务返回')
         write(out/'request.json',body,key)
         manifest.update(input_sha256=sha(out/'input.json'),prompt_sha256=sha(out/'prompt.txt'),
-                        request_sha256=sha(out/'request.json'),source_run=audit['source_run'],parameters={'store':False,'max_output_tokens':3000})
+                        request_sha256=sha(out/'request.json'),source_run=audit['source_run'],parameters={'store':False,'max_output_tokens':max_output_tokens})
         missing=[name for name,value in [('OPENAI_API_KEY',key),('TRACELAB_MODEL',model)] if not value]
+        if provider=='bailian':
+            missing=[] if key else ['DASHSCOPE_API_KEY']
+            manifest['parameters']={'max_tokens':max_output_tokens,'stream':False,'enable_thinking':False,'response_format':'json_object'}
         event('input_verified',fact_count=len(payload['facts']),evidence_count=len(payload['evidence']))
         if not execute or missing:
             manifest.update(status='not_called',missing_configuration=missing,
@@ -190,16 +245,25 @@ def run(source, output, execute=False):
             manifest['llm_called']=True
             event('request_started')
             before=time.monotonic()
+            transport={}
             try:
-                raw,request_id=call_api(body,key)
+                if provider=='bailian':
+                    raw,request_id=call_api(body,key,endpoint=endpoint,timeout=timeout_seconds,diagnostics=transport)
+                    manifest['http_status']=200
+                    raw=as_response(raw)
+                else:
+                    raw,request_id=call_api(body,key,timeout=timeout_seconds,diagnostics=transport)
+                    manifest['http_status']=200
                 safe=redact(visible_response(raw),key)
                 del raw
-                manifest.update(usage=safe['usage'],returned_model=safe['model'],request_id=redact(request_id,key))
+                manifest.update(usage=safe['usage'],returned_model=safe['model'],request_id=redact(request_id,key),
+                                finish_reason=safe['finish_reason'],incomplete_reason=safe['incomplete_reason'])
                 write(out/'response.json',safe,key)
                 texts=[m['text'] for m in safe['messages'] if m['type']=='output_text']
                 if safe['status']!='completed' or any(m['type']=='refusal' for m in safe['messages']) or not texts:
                     manifest['status']='response_failed'
-                    write(out/'checks.json',{'status':'failed','errors':['响应未完成、拒绝或无可用文本']})
+                    write(out/'checks.json',{'status':'failed','errors':['响应未完成、拒绝或无可用文本'],
+                                            'finish_reason':safe['finish_reason'],'incomplete_reason':safe['incomplete_reason']})
                 else:
                     try:
                         parsed=json.loads(''.join(texts))
@@ -213,11 +277,18 @@ def run(source, output, execute=False):
                         manifest['status']='validation_failed' if checked['status']=='failed' else 'completed_pending_human_review'
             except (error.HTTPError,error.URLError,TimeoutError,OSError,ValueError) as exc:
                 manifest['status']='call_failed'
+                manifest['http_status']=getattr(exc,'code',manifest['http_status'])
                 # Never persist provider error bodies or exception text (may echo credentials).
                 write(out/'error.json',{'type':type(exc).__name__,'http_status':getattr(exc,'code',None),
                                        'message':'调用失败；未记录服务端正文或请求头，以免回显凭证。'})
+                write(out/'checks.json',{'status':'not_run','reason':'调用未取得可核验的模型输出'})
             finally:
                 manifest['latency_seconds']=round(time.monotonic()-before,3)
+                if transport:
+                    manifest.update(transport_phase=transport.get('phase'),
+                                    http_status=transport.get('http_status'),
+                                    request_id=redact(transport.get('request_id'),key))
+                write(out/'transport.json',transport,key)
             event('request_finished',status=manifest['status'])
     except (ValueError,KeyError,StopIteration,OSError) as exc:
         manifest.update(status='input_failed',error_type=type(exc).__name__)
@@ -243,8 +314,14 @@ def main(argv=None):
     parser.add_argument('--stage2-run',type=Path,required=True)
     parser.add_argument('--output',type=Path,default=Path('outputs/stage3'))
     parser.add_argument('--execute',action='store_true')
+    parser.add_argument('--provider',choices=('openai','bailian'),default='openai')
+    parser.add_argument('--model',default=None,help='显式指定模型；未指定时沿用环境配置')
+    parser.add_argument('--timeout-seconds',type=int,default=55,help='套接字操作超时，1至300秒；不是总耗时上限')
+    parser.add_argument('--analysis-mode',choices=('full','focused'),default='full')
+    parser.add_argument('--max-output-tokens',type=int,default=3000,help='输出上限1至6000，不允许无上限')
     args=parser.parse_args(argv)
-    out,manifest=run(args.stage2_run,args.output,args.execute)
+    out,manifest=run(args.stage2_run,args.output,args.execute,args.provider,args.model,args.timeout_seconds,
+                     args.analysis_mode,args.max_output_tokens)
     print(json.dumps({'status':manifest['status'],'llm_called':manifest['llm_called'],'output':str(out.resolve())},ensure_ascii=False))
     return 0 if manifest['status'] in ('not_called','completed_pending_human_review') else 1
 

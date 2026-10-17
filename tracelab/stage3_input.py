@@ -18,7 +18,7 @@ def read(path):
     return json.loads(Path(path).read_text(encoding='utf-8'))
 
 
-def prepare(folder):
+def prepare(folder, mode='full'):
     from pypdf import PdfReader
     folder = Path(folder)
     if read(folder/'verification.json')['status'] != 'passed':
@@ -114,4 +114,8 @@ def prepare(folder):
     audit=dict(source_run=folder.name, input_hashes={name:sha(folder/name) for name in names},
                source_snapshots=[{'file':i['file'],'sha256':i['sha256']} for i in inventory],
                excluded=excluded, external_content='仅通过核验的公开年报数值及必要原文；金融组内部文档和摘要不外发')
+    from .analysis_contract import configure
+    payload,contract_hashes=configure(payload,folder,mode)
+    audit['input_hashes'].update(contract_hashes)
+    audit['analysis_mode']=mode
     return payload,audit

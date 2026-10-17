@@ -1,0 +1,209 @@
+{
+  "description": "真实focused失败样本；未修补。测试中的变体仅为合成离线材料。",
+  "analysis": {
+    "claims": [
+      {
+        "kind": "disclosure_explanation",
+        "statement": "年报披露净利润与经营现金流差异主因是票据保证金等受限资金到期收回。",
+        "metric_ids": [
+          "net_profit",
+          "operating_cashflow"
+        ],
+        "citations": [
+          {
+            "evidence_id": "E07_29",
+            "quote": "报告期内公司经营活动产生的现金净流量与本年度净利润存在重大差异的原因说明\n适用 不适用\n主要受经营活动有关受限资金到期收回影响，具体详见第八节财务报告附注五 71、现金流量表补充资料。"
+          },
+          {
+            "evidence_id": "E07_179",
+            "quote": "票 据 保 证 金 等 净 减 少 额\n15,667,164,024.70 元"
+          }
+        ],
+        "amounts": [
+          {
+            "fact_id": "bill_deposits",
+            "field": "current",
+            "unit": "元",
+            "value": "15667164024.70"
+          }
+        ],
+        "support_limit": "该解释覆盖本期差异主因，但未量化票据保证金减少对现金流净额的具体贡献。",
+        "accounting_links": [],
+        "comparison_basis": "current_period"
+      },
+      {
+        "kind": "disclosure_explanation",
+        "statement": "年报披露经营现金流同比增长57.93%主因销售商品收款及收到其他经营现金增加。",
+        "metric_ids": [
+          "operating_cashflow"
+        ],
+        "citations": [
+          {
+            "evidence_id": "E07_28",
+            "quote": "1.经营活动产生的现金流量净额同比变动 57.93%，主要系销售商品和提供劳务收到的现金增加、收到其他与经营活动有关\n的现金增加所致。"
+          }
+        ],
+        "amounts": [],
+        "support_limit": "未披露销售回款与他项现金的具体金额或占比，无法验证其相对贡献强度。",
+        "accounting_links": [],
+        "comparison_basis": "yoy"
+      }
+    ],
+    "questions": [
+      "票据保证金净减少是否全部计入本期经营现金流？有无重分类至投资/筹资活动？",
+      "销售商品收款增加额与经营现金流同比增量之间是否存在可验证的数值桥接？"
+    ]
+  },
+  "input": {
+    "company": "珠海格力电器股份有限公司",
+    "periods": [
+      "2024",
+      "2025"
+    ],
+    "currency": "CNY",
+    "scope": "披露口径的合并报表；合并范围变动，非恒定主体比较",
+    "question": "仅调查净利润下降与经营现金流增长的分化；不生成利润桥接或完整报告。",
+    "limits": [
+      "未输入营业外收入：Excel存储值与PDF不精确一致，不能补算完整利润总额桥接。",
+      "手续费及佣金收入本期为空，不当零。",
+      "金额均由Python计算；模型只引用，不新增数字。",
+      "保证金金额是本期调节项组成金额，不是经营现金流同比增量。",
+      "原始年报由用户提供；仅作本地文件与计算核验，未另行联网认证报告来源。"
+    ],
+    "facts": [
+      {
+        "fact_id": "net_profit",
+        "name": "净利润",
+        "evidence_ids": [
+          "F_net_profit"
+        ],
+        "amounts": {
+          "base": {
+            "元": "32371069287.35",
+            "亿元": "323.7107"
+          },
+          "current": {
+            "元": "28862746016.16",
+            "亿元": "288.6275"
+          },
+          "change": {
+            "元": "-3508323271.19",
+            "亿元": "-35.0832"
+          }
+        }
+      },
+      {
+        "fact_id": "operating_cashflow",
+        "name": "经营活动产生的现金流量净额",
+        "evidence_ids": [
+          "F_operating_cashflow"
+        ],
+        "amounts": {
+          "base": {
+            "元": "29369250570.66",
+            "亿元": "293.6925"
+          },
+          "current": {
+            "元": "46383114754.02",
+            "亿元": "463.8311"
+          },
+          "change": {
+            "元": "17013864183.36",
+            "亿元": "170.1386"
+          }
+        }
+      },
+      {
+        "fact_id": "bill_deposits",
+        "name": "本期票据保证金等净减少额",
+        "evidence_ids": [
+          "E07_179"
+        ],
+        "amounts": {
+          "current": {
+            "元": "15667164024.70",
+            "亿元": "156.6716"
+          }
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "F_net_profit",
+        "source_type": "公开年报披露",
+        "source_file": "格力2025年年度报告.pdf",
+        "printed_page": "87",
+        "pdf_page": 88,
+        "text": "五、净利润（净亏损以“-”号填列） 28,862,746,016.16 32,371,069,287.35",
+        "related_facts": [
+          "net_profit"
+        ],
+        "origin": "第二阶段数值原文检查",
+        "comparison_basis": "both_periods"
+      },
+      {
+        "evidence_id": "F_operating_cashflow",
+        "source_type": "公开年报披露",
+        "source_file": "格力2025年年度报告.pdf",
+        "printed_page": "88",
+        "pdf_page": 89,
+        "text": "经营活动产生的现金流量净额 46,383,114,754.02 29,369,250,570.66",
+        "related_facts": [
+          "operating_cashflow"
+        ],
+        "origin": "第二阶段数值原文检查",
+        "comparison_basis": "both_periods"
+      },
+      {
+        "evidence_id": "E07_28",
+        "parent_evidence_id": "E07",
+        "source_type": "公开年报披露",
+        "source_file": "格力2025年年度报告.pdf",
+        "printed_page": "28",
+        "pdf_page": 29,
+        "text": "1.经营活动产生的现金流量净额同比变动 57.93%，主要系销售商品和提供劳务收到的现金增加、收到其他与经营活动有关\n的现金增加所致。",
+        "related_facts": [
+          "net_profit",
+          "operating_cashflow"
+        ],
+        "comparison_basis": "yoy"
+      },
+      {
+        "evidence_id": "E07_29",
+        "parent_evidence_id": "E07",
+        "source_type": "公开年报披露",
+        "source_file": "格力2025年年度报告.pdf",
+        "printed_page": "29",
+        "pdf_page": 30,
+        "text": "报告期内公司经营活动产生的现金净流量与本年度净利润存在重大差异的原因说明\n适用 不适用\n主要受经营活动有关受限资金到期收回影响，具体详见第八节财务报告附注五 71、现金流量表补充资料。",
+        "related_facts": [
+          "net_profit",
+          "operating_cashflow"
+        ],
+        "comparison_basis": "current_period"
+      },
+      {
+        "evidence_id": "E07_179",
+        "parent_evidence_id": "E07",
+        "source_type": "公开年报披露",
+        "source_file": "格力2025年年度报告.pdf",
+        "printed_page": "179",
+        "pdf_page": 180,
+        "text": "票 据 保 证 金 等 净 减 少 额\n15,667,164,024.70 元",
+        "related_facts": [
+          "net_profit",
+          "operating_cashflow",
+          "bill_deposits"
+        ],
+        "comparison_basis": "current_period"
+      }
+    ],
+    "analysis_contract": {
+      "version": "v2",
+      "mode": "focused",
+      "max_claims": 2,
+      "ratios_allowed": false,
+      "accounting_relations": []
+    }
+  }
+}

@@ -14,6 +14,7 @@ from . import stage1
 from .accounting import YI, bridge, decimal_text, display_yi, growth
 from .source_io import read_docx, read_xlsx
 from .investigation import prepare_investigation
+from .review_status import write_review
 
 FILES = {
     'xlsx': '格力电器金融组核验整理材料及部分归因分析_数据底稿.xlsx',
@@ -390,19 +391,9 @@ def run(source_dir, output_root, revision='auto'):
         if scope_page and '合并范围的变更' in scope_page['text']:
             conflict('SCOPE_CAVEAT',files['2025'],'印刷页24/合并范围变动', '两期均为合并报表',
                      '报告披露合并范围发生变动，附注六说明', '允许披露口径差额计算；恒定主体范围经营归因仍待确认')
-        stage1.write_json(out/'conflicts.json',conflicts)
-        stage1.write_csv(out/'conflicts.csv',list(conflicts[0]),conflicts)
-        pending=['确认Excel金额存储尾差（如营业外收入）与PDF披露精度的处理：主结果保留Excel原值，PDF另行计算，不自动改数或设容差。',
-                 '确认营业利润全量映射及空白的净敞口套期收益等处理，不把选定总额闭合等同于完整桥接验收。',
-                 '确认原始勾稽和人工对比的容差/舍入规则；程序未设置业务通过阈值。',
-                 '按本次conflicts.json逐项核对仍存在的金额和页码差异；早期Word仅作为历史参考。',
-                 '演示方向已确认：分层利润拆解及利润下降、经营现金流增长；确认合并范围影响，并补齐现金流补充资料的结构化调节项。',
-                 '下一阶段可使用本次evidence.json已提取的原文；模型配置及单次分析问题另行确认。']
-        blank_note = ('修订版已将手续费及佣金收入本期保留为空；该项目继续阻断，不再要求确认是否填零。'
-                      if selected_revision=='revised' and cell(sheets,'财务原始数据',5,'C') is None else
-                      '手续费及佣金收入的Excel零与PDF空白不一致，保留冲突并阻断。')
-        pending.insert(0, blank_note)
-        (out/'pending_questions.md').write_text('# 金融组待确认\n\n'+'\n'.join(f'{i+1}. {q}' for i,q in enumerate(pending))+'\n',encoding='utf-8')
+        conflicts = write_review(out, conflicts, selected_revision=='revised')
+        blank_note = ('修订版已明确空白不填零；继续阻断该项目，无需重复确认。'
+                      if selected_revision=='revised' else '空白项目不按零计算。')
         summary=dict(run_id=run_id,status='completed_with_pending_confirmation',input_files=len(inventory),
                      source_revision=selected_revision, selected_files=files,
                      cost_detail_checks=len(cost_comparisons),

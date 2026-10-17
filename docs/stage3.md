@@ -1,5 +1,9 @@
 # 第三阶段：一次有限证据分析
 
+2026-10-16补充：已增加百炼Chat Completions最小适配，可显式选择--provider bailian；
+原OpenAI默认路径保留。以下OpenAI配置说明仅适用于原路径。
+百炼配置、无费用检查和真实连通性许可步骤见[bailian-connectivity.md](bailian-connectivity.md)。
+
 复用第二阶段结果与pypdf依赖。模型接口此前不存在，本阶段新增标准库HTTP调用OpenAI Responses API，
 采用结构化JSON输出。当前环境未发现可用的模型凭证或模型名，实际结果以运行manifest为准。
 没有真实响应时不生成analysis.json，不以测试中的人工样例冒充模型结果。

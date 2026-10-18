@@ -1,10 +1,12 @@
 # 第四阶段 Agent 重复查询修复与保留事项（2026-10-17 晚）
 
+> 当前状态补充（2026-10-18）：本文主体记录重复查询修复当时的定位与待办。修复后已另获授权执行一次真实调查 `20261017T151343-d0d3b954f5`，真实完成 search/get，第三轮响应截断，最终 validation_failed / incomplete_response；未提交有效 explain 或合理 stop。详见[后续真实验收](agent-live-acceptance-20261017T151343.md)。第四阶段未全部完成，完整经营解释和自主闭环仍未验收通过。本文旧授权和旧预检不能用于新调用。
+
 本轮沿用既有第四阶段架构，只调整上下文、动作预算约束和离线验收。没有新增阶段编号，没有真实 API 调用，没有读取密钥、复用授权或改动金融资料/公式/来源核验规则。Agent 仍是核心目标，第四阶段未全部完成。
 
 ## 失败定位：代码与实际请求共同支持的结论
 
-唯一真实运行仍为 `outputs/agent_live/20261017T095133-282a117e04`，结果没有改写。五轮顺序是 cash_2 → cash_6 → net_profit → operating_cashflow → cash_2，均为 fact_get；第五轮 repeated_action，四次工具预算耗尽，没有证据查询或 explain。
+重复查询修复前，当时唯一真实运行是 `outputs/agent_live/20261017T095133-282a117e04`，结果没有改写。五轮顺序是 cash_2 → cash_6 → net_profit → operating_cashflow → cash_2，均为 fact_get；第五轮 repeated_action，四次工具预算耗尽，没有证据查询或 explain。
 
 逐轮读取实际 decisions/01—05.json 后确认：
 

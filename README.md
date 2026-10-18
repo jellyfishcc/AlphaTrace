@@ -1,106 +1,98 @@
-# AlphaTrace（项目目录 TraceLab）
+# TraceLab（盈迹）
 
-面向上市公司净利润变化归因的财务调查项目。Python 负责确定性计算与核验，模型负责阅读披露、提出解释和调查问题，金融组负责复核经营因果。
+财务变化驱动的上市公司业绩归因与证据验证智能体。仓库名保留 **AlphaTrace**，Python 包和本地工程目录为 `tracelab` / `TraceLab`；现有 `alphatrace-display-v1` 契约不改名。
 
-当前主案例为格力 2024—2025 年，调查“净利润下降、经营活动现金流量净额增长”的走势分化。利润分析依次区分营业利润、利润总额、净利润、少数股东损益与归母净利润。
+以格力电器 2024—2025 年为真实案例，研究“净利润下降，经营活动现金流量净额增长”的方向分化。Python 提供确定性财务计算与来源核验；React 展示既有结果和真实 Agent 历史工具调用。**完整经营解释与自主调查闭环仍未通过真实端到端验收。**
 
-## 当前进度（2026-10-17）
+## 交付同学先读（2026-10-18）
 
-- 已完成结构化输入、Decimal 计算、利润层级核验和现金流直接法分项核对。
-- 已接入百炼北京 `qwen-plus`，实现完整和聚焦两种分析模式、单次调用日志及严格输出检查。最近一次独立真实分析仍为 `validation_failed`，不能把接口连通视为分析验收通过。
-- 已实现第四阶段 A：有轮数和工具上限的本地模拟调查，支持证据列表、检索和原文读取。此入口决策是预设 Mock；真实 Qwen 入口另见 B-2B。
-- 已接收金融组最终版资料：31 项指标中 29 项一致、2 项修正旧输入尾差；已列示有金额项目的营业利润桥接、成本八项、利润层级衔接和现金流三项勾稽复算闭合。
-- 新增 14 段可追溯年报证据；两项年度列冲突、两项 Word 展示差异和五处来源定位差异已在修订版核验解决，历史记录保留。空白仍不填零。
-- 已完成第四阶段 B-1：按原始年报来源核验证据，新增只读财务事实查询；修订版验收后45个事实可查询，缺失项目继续隔离。
-- 已完成第四阶段 B-2A：Qwen 决策适配、外发白名单、逐轮预算及失败保护，已通过假传输验证，另已进行一次真实模型调查，未通过端到端验收。
-- 已完成修订版增量验收与第四阶段 B-2B 预检：原9条附件冲突已解决。随后一次真实调查已运行：5 次 HTTP 200、4 次工具调用，第五次重复查询被拒绝，结果 validation_failed；未检索证据、未提交 explain。见[真实记录](docs/stage4b2b-live-result.md)。
-- 2026-10-17 最新 Agent 修改后完整测试 **183 项通过，0 失败，0 跳过**，模拟调查结果为待人工复核。原始资料需要人工整理，各阶段仍由命令启动；没有前端，也不是全自动系统。
+1. [初赛交付与演示交接](docs/delivery-2026-10-18.md)：准备哪些文件、如何启动、可展示什么、人工检查事项。
+2. [视频演示操作与验收](docs/frontend-video-demo.md)：5 分钟路线、资料选择弹窗、真实与规划边界。
+3. [开发进度](docs/progress.md)：按日期保留历史；最新条目置顶。
+4. [前端运行说明](frontend/README.md)：安装、启动、构建、展示包缺失处理。
 
-## 按阶段阅读
+本次文档核对的代码 HEAD 为 `9e1ef76`。以下为当前状态，不以历史阶段文档中的旧页面名或旧测试数量替代。
 
-| 阶段 | 内容与当前状态 | 文档 |
+## 当前能够真实展示的能力
+
+| 能力 | 当前成果 | 限定范围 |
 |---|---|---|
-| 第一阶段 | CSV 输入、校验与两期变化计算，已完成 | [输入与基础计算](docs/stage1.md) |
-| 第二阶段 | 真实财务数据、会计关系和来源核对，已实现 | [财务计算与核验](docs/stage2.md) |
-| 第三阶段 | 模型证据分析，已接入但真实输出尚未通过验收 | [运行说明](docs/stage3.md) · [真实测试与交接](docs/stage3-test-handoff.md) |
-| 第四阶段 A | 本地证据工具与模拟调查，已完成离线验证 | [模拟调查说明](docs/agent-local-mock.md) |
-| 第四阶段 B 前置工作 | 最终资料核验与证据扩充，已完成；部分附件差异保留 | [最终资料与下一阶段交接](docs/final-materials-handoff.md) |
-| 第四阶段 B-1 | 事实与证据接口升级，已完成离线验证 | [接口与测试交接](docs/stage4b1.md) |
-| 第四阶段 B-2A | Qwen 决策适配，已完成离线验证 | [适配器与离线测试](docs/stage4b2a.md) |
-| 第四阶段 B-2B | 修订资料验收、预检及一次真实调查；端到端验收失败 | [预检](docs/stage4b2b.md) · [真实失败记录](docs/stage4b2b-live-result.md) |
-| 完整自主调查闭环 | 尚未通过；本轮暂缓优化，仍是核心目标 | [保留待办](docs/agent-pending.md) |
-| 最小研报纠错 | 单条结构化陈述、离线确定性核查已实现 | [初赛交付说明](docs/delivery-2026-10-17.md) |
+| 财务计算与核验 | Decimal 金额、两期变化、利润层级桥接、现金流直接法勾稽 | 保留空白与未闭合项；会计贡献不等于经营因果 |
+| 真实数据展示 | 44 项财务记录、61 条可追溯年报来源 | 只展示已有白名单结果，不在浏览器重算金额 |
+| PDF 结构化提取 | 格力指定合并利润表，5 指标 × 2 年共 10 条，历史实跑全部 matched | 原生文字 PDF；预设表格/科目/页码，无 OCR、无任意 PDF 通用解析 |
+| 结构化研报纠错 | 构造陈述“增长35.0832亿元”被核查为方向错误，实际下降 | 单条结构化陈述；不是已发表研报，不支持任意全文理解 |
+| 真实 Agent 工具调用 | 最新历史为 search → get → error，3 轮、2 次工具调用、3 次请求 | 最终仍为 validation_failed / incomplete_response，没有有效 explain 或合理 stop |
+| 前端业务流程 | 开场 → 选择研究资料 → 载入已核验案例 → 业绩分析 → Agent 调查 → 核验报告与证据 | 离线结果回放；无在线上传分析、实时模型调用或审核写回 |
 
-[开发进度](docs/progress.md)保留历史记录，以最新条目为准。提示词版本 V3 是第三阶段内部的版本号，不是新的项目阶段。
+资料选择弹窗读取展示包中实际关联的文件名，目前只有 `格力2025年年度报告.pdf` 和已有两期结构化财务数据；**独立 2024 年报没有在展示包中关联**，不显示成已准备文件。点击载入会重新 fetch JSON 并校验，不会重新解析 PDF 或执行 Python。
 
-## 本地运行与验证
+开场直接使用后端同比：净利润 **-10.84%**、经营现金流 **57.93%**。净利润与归母净利润分别展示；金额、证据页码、桥接残差和 Agent 失败状态没有为演示改写。
 
-2026-10-18 前端离线集成：已有 `frontend/` React 页面通过白名单 JSON 展示真实财务金额、公开来源证据和历史 Agent 失败轨迹。运行 `cd frontend; pnpm dev` 后访问 `http://localhost:8443/`。需要先在本机生成展示包，完整命令与缺失状态说明见[前端离线数据集成](docs/frontend-offline-integration.md)。不启动 Python Web 服务，不调用模型；页面保留真实 `validation_failed`，示例与真实数据隔离。
+## 启动当前演示
 
-2026-10-18 补充：第一模块已有受限的原生文字 PDF 合并利润表提取入口。实际从格力 2025 年报 PDF 第 88 页（印刷第 87 页）读取五个科目的两年金额，输出精确 JSON/CSV 与独立来源核验结果。金额不从旧底稿复制；不使用 LLM/OCR，不代表任意 PDF 通用解析。见[PDF 提取运行与边界](docs/pdf-extraction.md)。
+前端工具版本见 `frontend/.mise.toml`：Node.js 22、pnpm 10.34.3。已有依赖时可跳过安装；已有 8443 服务时直接访问，不要重复启动。
 
 ```powershell
-python -X utf8 -m tracelab.pdf_extract --stage2-run outputs/final_revision/20261017T093152-d80de1cefa
+cd D:\Projects\TraceLab\frontend
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-运行需要本地原始 PDF 和完整已验证快照；新克隆不含私有附件。输出到独立 `outputs/pdf_extract/<run_id>/`，不会覆盖快照或自动接入可信事实。无私有附件时仍可运行公开合成测试：`python -X utf8 -m unittest discover -s tests -p test_pdf_extract.py -v`（真实资料集成测试会明确跳过）。
+访问 <http://localhost:8443/>，点击“选择研究资料”，选中格力案例，再点“载入已核验案例”。关闭按钮、Esc 或“返回介绍页”可退出弹窗；左侧品牌可返回开场。三个主导航保持不变。
 
-第一阶段仅依赖 Python 标准库；年报读取及后续核验需要 [requirements-stage2.txt](requirements-stage2.txt) 中的依赖。使用 Python 3.10+，从仓库根目录运行：
+**新克隆不会带真实展示包。** `frontend/public/data/` 和 `outputs/` 均被 Git 忽略。需要通过获准的交接渠道准备已有白名单 `gree-display.json`，或在具备完整本地资料的机器执行导出。不要把原始 PDF、内部附件、完整模型日志复制到 public。完整导出命令及资料依赖见[交付清单](docs/delivery-2026-10-18.md)。缺失或校验失败会阻止真实案例载入；模拟案例必须显式选择。
+
+前端不需要 Python Web 服务或 API Key。浏览器结构校验不等于重新认证原始 PDF，也不是数字签名；展示包应来自可信导出流程。
+
+## 验证记录与命令
+
+| 范围 | 最近已有实际记录 | 说明 |
+|---|---|---|
+| 前端 | 32 通过、0 失败、0 跳过；typecheck/build 通过 | 资料选择交互完成后的验收，见视频文档 |
+| Python | 222 通过、0 失败、0 跳过 | 第二轮结果集成时的全量记录，见[集成验收](docs/frontend-results-integration.md)；后续前端及本次文档更新未重跑 Python |
+| 浏览器 | 三页流程、资料选择载入/关闭、来源返回、模拟隔离通过 | 实测 1280×720；1920×1080 仍需录屏机器复查 |
+
+```powershell
+# frontend 目录，另开终端执行，pnpm dev 会持续占用当前终端
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+以下 Python 命令从仓库根目录执行。Python 3.10+，真实 PDF 功能需要 requirements 中的依赖。无原始资料也可执行公开模拟示例；模拟结果不是格力实测成果。
 
 ```powershell
 python -m pip install -r requirements.txt
 python -X utf8 -m tracelab --input examples/simulated/financial.csv --metadata examples/simulated/metadata.json
+python -X utf8 -m tracelab.report_check --simulated-demo
 python -X utf8 -m unittest discover -s tests -v
 ```
 
-模拟输入不代表真实财务验收。金融组输入模板为 [CSV 模板](templates/financial.csv)和[元数据模板](templates/metadata.json)。每次运行生成独立目录，不覆盖历史结果。
+真实资料集成测试依赖本地快照；缺少资料的跳过不能写成真实案例通过。历史源码隔离验收的通过数和跳过口径见[10 月 17 日记录](docs/delivery-2026-10-17.md)，不是当前代码的干净环境全量验收。
 
-在当前开发机器上，最终版快照的离线模拟调查可运行：
+具备原始 PDF 与完整修订快照时，可重复运行已有离线功能（不调用模型、不覆盖历史结果）：
 
 ```powershell
+python -X utf8 -m tracelab.pdf_extract --stage2-run outputs/final_revision/20261017T093152-d80de1cefa
+python -X utf8 -m tracelab.report_check --stage2-run outputs/final_revision/20261017T093152-d80de1cefa --claim examples/report_check/gree_direction_error.json
 python -X utf8 -m tracelab.agent --stage2-run outputs/final_revision/20261017T093152-d80de1cefa --final-evidence
 ```
 
-此命令只运行本地 Mock，不发送 API 请求。新克隆不包含上述私有运行快照，需先按[最终版交接说明](docs/final-materials-handoff.md)接收本地附件；缺少快照时相关集成测试会明确跳过，不能据此声称真实资料核验通过。开发机器运行环境及临时目录权限处理也见该说明。
+最后一条是本地 Mock 调查，不是真实模型。详见 [PDF 说明](docs/pdf-extraction.md)、[纠错说明](examples/report_check/README.md)、[Mock 调查说明](docs/agent-local-mock.md)。
 
-## 没有界面时，如何检查成果
+## Agent 当前状态与历史证据
 
-| 要检查什么 | 查看位置 |
-|---|---|
-| 新旧金额是否一致 | `outputs/final_release/<运行编号>/comparison.csv` |
-| 利润与现金流是否闭合 | 同目录 `bridges.json`、`cash_bridges.json` |
-| 还存在哪些资料差异 | 同目录 `conflicts.json`、`pending_questions.md` |
-| 新证据原文与页码 | 同目录 `verified_evidence.json` |
-| 模拟调查执行了哪些行动 | `outputs/agent/<运行编号>/events.jsonl` |
-| 调查状态及人工复核事项 | 同目录 `result.json`、`manifest.json` |
-| 真实模型为何失败 | [第三阶段真实测试交接](docs/stage3-test-handoff.md)及其引用的本地运行目录 |
+- 首次真实调查：四次 fact_get 后重复查询被阻断，没有进入 search/get，最终失败。[保留原记录](docs/stage4b2b-live-result.md)。
+- 随后完成事实上下文、重复查询及证据预算修复；Replay 的 explain / insufficient 两条路径通过离线检查，不能当作真实模型成功。[修复与保留待办](docs/agent-pending.md)。
+- 修复后经另一次明确授权的真实调查：search 返回 E07_28、F_net_profit；get 读取 F_operating_cashflow；第三轮响应截断，最终 validation_failed / incomplete_response。[最新真实验收](docs/agent-live-acceptance-20261017T151343.md)。
 
-通用操作见[自查说明](docs/self-check.md)，最新快照和测试日志位置见[最终版交接说明](docs/final-materials-handoff.md)。`pending_human_review` 只代表基础检查通过，不能等同于经营因果得到证明。
+第四阶段未全部完成，Agent 仍是核心目标。前端虚线“经营解释生成与证据校验”是尚未完成的产品能力，不是已执行成功的第三步。任何新的真实 API 调用都需要独立授权；交付和录屏不需要重新运行调查，也不能复用旧授权。
 
-## 下一步与边界
+## 工程文档与提交边界
 
-当前优先交付与验收，Agent 暂缓优化而非取消；第四阶段未全部完成。一次真实调查已失败，后续仍需完成自主调查与严格解释核验闭环。金融组仍需复核经营解释是否超出原文支持范围。原始元计算、空白处理、同比边界和已确认利润层级规则不再重复作为待确认项。
+- 计算与输入：[第一阶段](docs/stage1.md)、[第二阶段](docs/stage2.md)、[CSV 模板](templates/financial.csv)、[元数据模板](templates/metadata.json)。
+- 来源修订：[最终资料交接（历史）](docs/final-materials-handoff.md)、[修订版预检](docs/stage4b2b.md)。当前修订版原 9 项冲突已解决，历史差异不当作当前未解决问题。
+- 模型与调查：[第三阶段](docs/stage3.md)、[B-1](docs/stage4b1.md)、[B-2A](docs/stage4b2a.md)。这些编号沿用既有项目记录，没有新增阶段。
+- 前后端数据契约：[首次集成（历史）](docs/frontend-offline-integration.md)、[结果集成](docs/frontend-results-integration.md)、[当前视频操作](docs/frontend-video-demo.md)。
 
-模型不得修改 Python 已确认金额，不得把本期受限资金调节额当作现金流同比贡献，也不得仅凭现金流增长推断盈利质量改善。新的真实 API 调用须单独明确范围与授权。
-
-API 密钥仅保存在本地环境变量，不提交到版本库。原始财报、金融组内部附件、完整运行记录及生成结果默认不纳入 Git；仓库中的脱敏失败样本仅用于离线回归测试。
-
-## 初赛复现与单条研报核查
-
-新克隆可离线执行公开模拟示例（不代表真实财务结果，不调用 LLM）：
-
-```powershell
-python -X utf8 -m tracelab.report_check --simulated-demo
-```
-
-本机已有私有修订快照时，可运行格力方向错误示例：
-
-```powershell
-python -X utf8 -m tracelab.report_check --stage2-run outputs/final_revision/20261017T093152-d80de1cefa --claim examples/report_check/gree_direction_error.json
-```
-
-输出 `result.json` 和 `report.md`，本例为 `发现错误 / 方向错误`。示例陈述是人为构造的错误句，不是实际研报摘录。真实金额在运行时重新从通过来源核验的快照读取。来源不完整则输出“无法核实”，不会降级为模拟。只核查结构化字段，原文转写一致性仍需人工检查；不支持任意全文或自动因果判断。
-
-上一轮初赛交付源码包的隔离测试实际通过146项（不含本轮新增Agent测试），失败0项；unittest报告5个跳过事件（4个测试类、1个测试方法，共27项依赖本地资料的方法未执行）。不能宣传为全量真实案例通过。完整的环境说明、缺失资料、测试记录及提交边界见[10月17日交付检查](docs/delivery-2026-10-17.md)。
-
-第四阶段 Agent 最新离线进展：已补齐事实状态标识、证据预算保护及 search→get→explain/stop 两条Replay路径；真实自主调查仍未通过验收，见[定位与离线记录](docs/agent-pending.md)。
+API Key、原始财报、内部附件、完整请求响应、历史运行目录不纳入源码提交。dist 构建会携带 public 中的白名单 JSON，发布前需人工确认公开范围；本项目当前没有自动部署或在线分析服务。不得把金额一致性核验表述为独立审计，不得仅凭现金流增长判断盈利质量改善或经营因果成立。

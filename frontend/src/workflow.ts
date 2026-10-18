@@ -8,8 +8,30 @@ export const workflow = [
 ] as const
 
 export const viewLabels: Record<ViewId, string> = {
+  intro: '产品介绍',
   overview: '业绩分析', investigation: 'Agent 调查', review: '核验报告与证据',
   financials: '财务计算详情', evidence: '证据原文', pdf: 'PDF 提取详情', report: '结构化研报纠错', cases: '研究档案',
+}
+
+// The opening example must be this real case, never the currently selected mock.
+export function openingCase(records: CaseRecord[]): CaseRecord | undefined {
+  return records.find((r) => !r.run.isExample && r.run.mode === 'qwen_real'
+    && ['珠海格力电器股份有限公司', '格力电器'].includes(r.run.company)
+    && r.run.basePeriod === '2024' && r.run.currentPeriod === '2025')
+}
+
+export function preparedSourceFiles(record: CaseRecord): string[] {
+  return [...new Set(record.evidence.map((e) => e.fileName))].sort()
+}
+
+// The freshly adapted bundle must still describe the case the user selected.
+export function verifyPreparedCase(selected: CaseRecord, loaded: CaseRecord): CaseRecord {
+  if (!openingCase([loaded]) || selected.id !== loaded.id || selected.run.id !== loaded.run.id
+    || selected.run.materialVersion !== loaded.run.materialVersion
+    || JSON.stringify(preparedSourceFiles(selected)) !== JSON.stringify(preparedSourceFiles(loaded))) {
+    throw new Error('案例或资料版本已变化，请关闭窗口并刷新页面后重新选择。')
+  }
+  return loaded
 }
 
 export function primaryView(view: ViewId): ViewId {

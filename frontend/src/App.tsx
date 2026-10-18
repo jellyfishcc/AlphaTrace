@@ -1,5 +1,7 @@
-import { workflow, adjacent, primaryView, viewLabels, resolveLink, agentOutcome, linkedEvidence } from './workflow'
+import { workflow, adjacent, primaryView, viewLabels, resolveLink, agentOutcome, linkedEvidence, openingCase, verifyPreparedCase } from './workflow'
 import { ResearchTask } from './ResearchTask'
+import { IntroPage } from './IntroPage'
+import { ResearchMaterialsDialog } from './ResearchMaterialsDialog'
 import { AgentInvestigation } from './AgentInvestigation'
 import { AnalysisReport } from './AnalysisReport'
 import { OfflineResults } from './OfflineResults'
@@ -49,7 +51,11 @@ function Empty({ title, detail }: { title: string; detail: string }) {
 function App() {
   const [records, setRecords] = useState<CaseRecord[]>(exampleCases)
   const [selectedId, setSelectedId] = useState(exampleCases[0].id)
-  const [view, setView] = useState<ViewId>('overview')
+  const [view, setView] = useState<ViewId>('intro')
+  const [materialsOpen, setMaterialsOpen] = useState(false)
+  const [materialsLoading, setMaterialsLoading] = useState(false)
+  const [materialsError, setMaterialsError] = useState('')
+  const materialsRequest = useRef(0)
   const [panelOpen, setPanelOpen] = useState(false)
   const [selectedMetricId, setSelectedMetricId] = useState('operating_profit')
   const [selectedEvidenceId, setSelectedEvidenceId] = useState('E12_A')
@@ -73,7 +79,7 @@ function App() {
     setSelectedMetricId(record.metrics[0]?.id ?? '')
     setSelectedEvidenceId(record.evidence[0]?.id ?? '')
     setSelectedExplanationId(record.explanations[0]?.id ?? '')
-    setView('overview'); setEvidenceOrigin('overview'); setDetailOrigin('overview'); setPanelOpen(false)
+    setView((current) => current === 'intro' ? 'intro' : 'overview'); setEvidenceOrigin('overview'); setDetailOrigin('overview'); setPanelOpen(false)
   }, [selectedId])
 
   const goMetric = (id: string) => { setDetailOrigin(primaryView(view === 'evidence' ? evidenceOrigin : view)); setSelectedMetricId(id); setView('financials'); setPanelOpen(false); window.scrollTo({top:0}) }
@@ -95,6 +101,24 @@ function App() {
   }
 
   const navigate = (next: ViewId) => { setView(next); setPanelOpen(false); window.scrollTo({ top: 0 }) }
+  const closeMaterials = () => { materialsRequest.current++; setMaterialsOpen(false); setMaterialsLoading(false); setMaterialsError('') }
+  const loadPrepared = async (selected: CaseRecord) => {
+    if (materialsLoading) return
+    const request = ++materialsRequest.current
+    setMaterialsLoading(true); setMaterialsError('')
+    try {
+      const real = verifyPreparedCase(selected, await loadDisplayBundle())
+      if (request !== materialsRequest.current) return
+      setRecords((current) => [real, ...current.filter((item) => item.id !== real.id)])
+      setSelectedId(real.id); setDataReady(true); setLoadNotice('')
+      setSelectedMetricId(real.metrics[0]?.id ?? ''); setSelectedEvidenceId(real.evidence[0]?.id ?? ''); setSelectedExplanationId('')
+      closeMaterials(); navigate('overview')
+    } catch {
+      if (request === materialsRequest.current) setMaterialsError('展示包读取或校验失败，未进入分析。请检查 gree-display.json；若资料版本发生变化，请关闭窗口并刷新后重新选择。')
+    } finally {
+      if (request === materialsRequest.current) setMaterialsLoading(false)
+    }
+  }
   const originView = view === 'evidence' ? evidenceOrigin : view
   const activeView = primaryView(originView === 'financials' ? detailOrigin : originView)
   const stepIndex = workflow.findIndex((step) => step.id === activeView)
@@ -108,11 +132,13 @@ function App() {
     return <ResearchTask record={record} onInvestigate={() => navigate('investigation')} onMetric={goMetric} onEvidence={goEvidence} onView={navigate}/>
   }
 
+  if (view === 'intro') return <><IntroPage records={records} notice={loadNotice} onChoose={() => { setMaterialsError(''); setMaterialsOpen(true) }} onArchive={() => navigate('cases')}/>{materialsOpen && <ResearchMaterialsDialog record={openingCase(records)} loading={materialsLoading} error={materialsError} onClose={closeMaterials} onLoad={loadPrepared}/>}</>
+
   return (
     <div className="app-shell">
       <input ref={fileRef} className="sr-only" type="file" accept=".json" onChange={(event) => handleImport(event.target.files)}/>
       <aside className="sidebar">
-        <div className="brand"><div className="brand-mark"><span/><span/><span/></div><div><strong>AlphaTrace</strong><small>业绩归因与证据验证</small></div></div>
+        <button className="brand brand-home" onClick={() => navigate('intro')} aria-label="TraceLab（盈迹）返回产品介绍"><div className="brand-mark"><span/><span/><span/></div><div><strong>TraceLab <span>盈迹</span></strong><small>业绩归因与证据验证</small></div></button>
         <div className="case-mini"><span>当前案例</span><strong>{record.run.company}</strong><small>{record.run.currentPeriod} vs {record.run.basePeriod}</small></div>
         <nav aria-label="核心业务导航">
           <p className="nav-title">研究工作空间</p>
@@ -144,7 +170,7 @@ function App() {
         <main className={panelOpen ? 'main-grid panel-visible' : 'main-grid'}>
           <div className="content-area">
             {loadNotice && <div className="import-note" role="status">{loadNotice}</div>}
-            {dataReady ? <>
+            {dataReady || view === 'cases' ? <>
               {view !== 'cases' && <div className="flow-position"><strong>{viewLabels[view]}</strong><span>{['overview','investigation','review'].includes(view) ? workflow[stepIndex]?.hint : '辅助资料 · 保持当前案例上下文'}</span>{!['overview','investigation','review'].includes(view) && <button className="btn secondary" onClick={() => navigate(view === 'evidence' ? evidenceOrigin : view === 'financials' ? detailOrigin : 'overview')}>返回{viewLabels[view === 'evidence' ? evidenceOrigin : view === 'financials' ? detailOrigin : 'overview']}</button>}</div>}
               {renderView()}
               {workflow.some((step) => step.id === view) && <div className="flow-footer"><button className="btn secondary" disabled={!adjacent(view,-1)} onClick={() => {const next=adjacent(view,-1); if(next) navigate(next)}}>返回上一页</button><span>发现财务变化 → 调查变化原因 → 核对证据与结果</span>{adjacent(view,1) && <button className="btn primary" onClick={() => {const next=adjacent(view,1); if(next) navigate(next)}}>查看{viewLabels[adjacent(view,1)!]} →</button>}</div>}

@@ -1,5 +1,7 @@
 {
-  "description": "Converts markdown files into an interactive frontend for TraceLab products, enabling users to visualize and manage content efficiently.",
+  "title": "TraceLab（盈迹）｜业绩归因与证据验证",
+  "language": "zh-CN",
+  "description": "财务变化驱动的上市公司业绩归因与证据验证智能体。从财务变化发现问题，以可信证据追溯原因。",
   "robots": {
     "index": false
   },

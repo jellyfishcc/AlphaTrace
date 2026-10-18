@@ -25,6 +25,10 @@ function load(name) {
 const {ResearchTask} = load('ResearchTask')
 const {AgentInvestigation} = load('AgentInvestigation')
 const {AnalysisReport} = load('AnalysisReport')
+const {IntroPage} = load('IntroPage')
+const {ResearchMaterialsDialog} = load('ResearchMaterialsDialog')
+const {preparedSourceFiles, verifyPreparedCase} = load('workflow')
+const {openingCase, workflow, adjacent} = load('workflow')
 const {resolveLink,agentOutcome,coreMetrics} = load('workflow')
 const {exampleCases} = load('data/example')
 const render = (Component,record) => renderToStaticMarkup(React.createElement(Component,{record,onInvestigate(){},onMetric(){},onEvidence(){},onView(){},onLink(){},onReport(){},onExplanation(){},onInvestigation(){}}))
@@ -65,7 +69,7 @@ test('real homepage leads with financial facts, not correction or internal error
   const html=outsideDetails(render(ResearchTask,real))
   assert.match(html,/业绩分析工作台/)
   for(const metric of coreMetrics(real)) for(const field of ['base','current','delta']) assert.ok(html.includes(metric[field]))
-  assert.match(html,/查看该财务信号的历史调查过程/)
+  assert.match(html,/查看 Agent 调查过程/)
   assert.doesNotMatch(html,/增长35\.0832|结构化研报纠错|validation_failed|incomplete_response/)
 })
 test('real Agent presents actual search/get/error and keeps technical failure intact',{skip:!real},()=>{
@@ -74,9 +78,64 @@ test('real Agent presents actual search/get/error and keeps technical failure in
   assert.match(html,/检索相关年报证据/); assert.match(html,/读取已定位的证据原文/)
   assert.match(html,/响应不完整，未形成有效动作/)
   assert.match(html,/validation_failed/); assert.match(html,/incomplete_response/)
-  assert.doesNotMatch(outsideDetails(html),/validation_failed|incomplete_response/)
+  assert.doesNotMatch(outsideDetails(html),/validation_failed|incomplete_response|响应不完整，未形成有效动作|第 3 轮/)
+  assert.equal((outsideDetails(html).match(/class="step-card actual-tool"/g) ?? []).length,2)
+  assert.match(outsideDetails(html),/规划能力 \/ 尚未完成/)
+  assert.match(outsideDetails(html),/完整经营解释尚未通过校验/)
+  for (const step of real.steps) {
+    assert.ok(html.includes(step.result))
+    for(const id of step.links) assert.ok(html.includes(id))
+  }
   assert.doesNotMatch(html,/调查成功|已完成归因|等待人工审核最终解释/)
   assert.deepEqual(real,before)
+})
+
+const intro = records => renderToStaticMarkup(React.createElement(IntroPage,{records,notice:'',onChoose(){},onArchive(){}}))
+test('opening page excludes mock or wrong-period records without substituting amounts',()=>{
+  const mock={...exampleCases[0],run:{...exampleCases[0].run,company:'格力电器',basePeriod:'2024',currentPeriod:'2025'}}
+  assert.equal(openingCase([mock]),undefined)
+  assert.match(intro([mock]),/真实案例数据尚不可用/)
+  assert.match(intro([mock]),/选择研究资料/)
+  assert.doesNotMatch(intro([mock]),/10\.84%|57\.93%|0\.00%/)
+  const wrong={...mock,run:{...mock.run,isExample:false,mode:'qwen_real',currentPeriod:'2023'}}
+  assert.equal(openingCase([wrong]),undefined)
+})
+test('opening remains separate from the three main pages',()=>{
+  assert.deepEqual(workflow.map(s=>s.id),['overview','investigation','review'])
+  assert.equal(adjacent('intro',1),undefined)
+  assert.equal(adjacent('overview',1),'investigation')
+  assert.equal(adjacent('investigation',1),'review')
+  assert.equal(adjacent('review',-1),'investigation')
+})
+test('opening entry requests selection rather than directly opening analysis',()=>{
+  let chosen=0
+  const elements = node => Array.isArray(node) ? node.flatMap(elements) : node && typeof node==='object' ? [node,...elements(node.props?.children)] : []
+  const tree=IntroPage({records:exampleCases,notice:'',onChoose:()=>chosen++,onArchive(){}})
+  const entry=elements(tree).find(e=>e.type==='button' && e.props.children==='选择研究资料 →')
+  entry.props.onClick()
+  assert.equal(chosen,1)
+})
+test('real opening reads exact exported percentages and never manufactures missing values',{skip:!real},()=>{
+  assert.equal(openingCase([...exampleCases,real]),real)
+  const html=intro([...exampleCases,real])
+  for(const id of ['net_profit','operating_cashflow']) {
+    const m=[...real.metrics,...real.cashMetrics].find(m=>m.id===id)
+    assert.ok(html.includes(m.yoy)); assert.ok(html.includes(m.delta))
+  }
+  assert.match(html,/TraceLab/); assert.doesNotMatch(html,/AlphaTrace|validation_failed|incomplete_response/)
+  const missing={...real,metrics:[],cashMetrics:[]}
+  assert.match(intro([missing]),/未提供/)
+  assert.doesNotMatch(intro([missing]),/10\.84%|57\.93%|0\.00%/)
+})
+test('Agent does not fabricate an executed action from absent, rejected or malformed calls',()=>{
+  const original=exampleCases[0]
+  const record={...original,steps:[{round:1,action:'search',params:'not JSON',summary:'原始摘要',result:'未提供',links:['missing-id']},{round:2,action:'get',params:'{}',summary:'被阻断',result:'被阻断',links:[],error:'unauthorized'}]}
+  const html=render(AgentInvestigation,record),visible=outsideDetails(html)
+  assert.match(visible,/实际检索内容.*未提供/)
+  assert.match(visible,/missing-id · 未提供关联记录/)
+  assert.doesNotMatch(visible,/第 2 轮/)
+  assert.match(html,/unauthorized/)
+  assert.equal((visible.match(/class="step-card actual-tool"/g) ?? []).length,1)
 })
 test('real report has no fabricated explanation or internal approval cards',{skip:!real},()=>{
   const html=render(AnalysisReport,real), visible=outsideDetails(html)
@@ -85,4 +144,36 @@ test('real report has no fabricated explanation or internal approval cards',{ski
   assert.doesNotMatch(visible,/等待人工复核|人工业务复核|文件已读取|validation_failed|EXP-02|加强回款管理/)
   assert.match(visible,/-1256986374\.01/)
   assert.match(html,/F_net_profit/)
+})
+
+const materials = (record,extra={}) => renderToStaticMarkup(React.createElement(ResearchMaterialsDialog,{record,loading:false,error:'',onClose(){},onLoad(){},...extra}))
+test('material dialog blocks missing and unselected cases and preserves close controls',()=>{
+  const html=materials(undefined)
+  assert.match(html,/真实案例资料暂不可用/)
+  assert.match(html,/<button[^>]*disabled=""[^>]*>载入已核验案例/)
+  assert.match(html,/关闭资料选择/); assert.match(html,/返回介绍页/)
+  assert.doesNotMatch(html,/type="file"/)
+})
+test('material source names come only from the selected public evidence',{skip:!real},()=>{
+  const before=structuredClone(real),html=materials(real)
+  const names=[...new Set(real.evidence.map(e=>e.fileName))].sort()
+  assert.deepEqual(preparedSourceFiles(real),names)
+  for(const name of names) assert.ok(html.includes(name))
+  assert.doesNotMatch(html,/格力2024 年年度报告.pdf|格力2024年年度报告.pdf/)
+  assert.match(html,/2024 年报独立文件未在展示包中关联/)
+  assert.match(html,/已有两期金额、会计桥接与来源/)
+  assert.match(html,/<button[^>]*disabled=""[^>]*>载入已核验案例/)
+  assert.deepEqual(real,before)
+})
+test('fresh loading rejects changed case, snapshot or file association',{skip:!real},()=>{
+  assert.equal(verifyPreparedCase(real,real),real)
+  for(const change of [r=>r.id='other',r=>r.run.id='other',r=>r.run.materialVersion='other',r=>r.run.isExample=true,r=>r.run.currentPeriod='2023',r=>r.evidence[0].fileName='other.pdf']) {
+    const changed=structuredClone(real);change(changed)
+    assert.throws(()=>verifyPreparedCase(real,changed))
+  }
+})
+test('dialog shows only actual reading or validation error states',()=>{
+  assert.match(materials(undefined,{error:'展示包读取或校验失败'}),/role="alert"[^>]*>展示包读取或校验失败/)
+  assert.match(materials(undefined,{loading:true}),/正在读取展示包…/)
+  assert.doesNotMatch(materials(undefined),/解析完成|计算完成|调查成功/)
 })

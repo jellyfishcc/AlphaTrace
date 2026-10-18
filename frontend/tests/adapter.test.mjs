@@ -3,9 +3,9 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import ts from 'typescript'
 
-const source=fs.readFileSync(new URL('../src/data/adapter.ts',import.meta.url),'utf8')
+const source=fs.readFileSync(new URL('../src/data/adapter.ts',import.meta.url),'utf8').replace('import.meta.env.BASE_URL', JSON.stringify('/'))
 const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}})
-const {adaptDisplayBundle,adaptLocalFiles}=await import('data:text/javascript;base64,'+Buffer.from(outputText).toString('base64'))
+const {adaptDisplayBundle,adaptLocalFiles,loadDisplayBundle}=await import('data:text/javascript;base64,'+Buffer.from(outputText).toString('base64'))
 function fixture() {
   return {schema:'alphatrace-display-v1',provenance:{snapshotId:'snapshot',agentRunId:'run',financialSha256:'a'.repeat(64),cashSha256:'b'.repeat(64),eventsSha256:'c'.repeat(64),resultSha256:'d'.repeat(64)},
     record:{id:'synthetic',question:'合成测试',pendingCount:1,
@@ -71,4 +71,21 @@ test('module cross snapshot, unknown fields and unlinked evidence are rejected',
 })
 test('real extended records survive adapter without changing any result',{skip:!fs.existsSync(realPath)},()=>{
   const f=JSON.parse(fs.readFileSync(realPath,'utf8'));assert.deepEqual(adaptDisplayBundle(f).modules,f.record.modules)
+})
+
+test('prepared case load fetches the public JSON anew and validates before returning',async()=>{
+  const original=globalThis.fetch, calls=[]
+  try {
+    globalThis.fetch=async(...args)=>{calls.push(args);return {ok:true,json:async()=>fixture()}}
+    const first=await loadDisplayBundle(),second=await loadDisplayBundle()
+    assert.equal(calls.length,2)
+    for(const [url,options] of calls) { assert.equal(url,'/data/gree-display.json');assert.equal(options.cache,'no-store') }
+    assert.deepEqual(first.metrics,second.metrics)
+    globalThis.fetch=async()=>({ok:false})
+    await assert.rejects(loadDisplayBundle())
+    globalThis.fetch=async()=>({ok:true,json:async()=>({schema:'invalid'})})
+    await assert.rejects(loadDisplayBundle())
+    globalThis.fetch=async()=>({ok:true,json:async()=>{throw new SyntaxError('Invalid JSON')}})
+    await assert.rejects(loadDisplayBundle())
+  } finally { globalThis.fetch=original }
 })

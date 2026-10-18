@@ -1,4 +1,4 @@
-export type ViewId = 'cases' | 'overview' | 'financials' | 'investigation' | 'evidence' | 'review' | 'report' | 'pdf'
+export type ViewId = 'intro' | 'cases' | 'overview' | 'financials' | 'investigation' | 'evidence' | 'review' | 'report' | 'pdf'
 
 export interface OfflineSection {
   kind: 'report' | 'pdf' | 'profit' | 'cash' | 'verification'

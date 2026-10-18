@@ -1,0 +1,3516 @@
+{
+  "schema": "alphatrace-display-v1",
+  "record": {
+    "id": "real-20261017T151343-d0d3b954f5",
+    "run": {
+      "id": "20261017T151343-d0d3b954f5",
+      "label": "格力真实调查 · 验证失败",
+      "company": "珠海格力电器股份有限公司",
+      "ticker": "未提供",
+      "basePeriod": "2024",
+      "currentPeriod": "2025",
+      "scope": "披露口径的合并报表；合并范围变动，非恒定主体比较",
+      "materialVersion": "20261017T093152-d80de1cefa",
+      "source": "本地 Python 白名单展示包",
+      "mode": "qwen_real",
+      "status": "validation_failed",
+      "statusLabel": "真实调查失败 · incomplete_response",
+      "importedAt": "2026-10-18T02:31:37.764994+00:00",
+      "backendRunAt": "2026-10-17T15:13:43.818917+00:00",
+      "isExample": false
+    },
+    "question": "格力电器2024—2025年净利润下降，但经营活动现金流量净额增长。根据已核验财务事实和公开年报原始披露，调查可能的解释及其证据边界。",
+    "pendingCount": 1,
+    "metrics": [
+      {
+        "id": "total_revenue",
+        "name": "营业总收入",
+        "level": 0,
+        "base": "190038071604.78 元",
+        "current": "171118161275.41 元",
+        "delta": "-18919910329.37 元",
+        "yoy": "-9.96%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_total_revenue",
+        "rawAmounts": {
+          "base": "190038071604.78",
+          "current": "171118161275.41",
+          "change": "-18919910329.37"
+        }
+      },
+      {
+        "id": "revenue",
+        "name": "营业收入",
+        "level": 0,
+        "base": "189163654064.64 元",
+        "current": "170447058533.57 元",
+        "delta": "-18716595531.07 元",
+        "yoy": "-9.89%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_revenue",
+        "rawAmounts": {
+          "base": "189163654064.64",
+          "current": "170447058533.57",
+          "change": "-18716595531.07"
+        }
+      },
+      {
+        "id": "interest_income",
+        "name": "利息收入",
+        "level": 0,
+        "base": "874417456.85 元",
+        "current": "671102741.84 元",
+        "delta": "-203314715.01 元",
+        "yoy": "-23.25%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_interest_income",
+        "rawAmounts": {
+          "base": "874417456.85",
+          "current": "671102741.84",
+          "change": "-203314715.01"
+        }
+      },
+      {
+        "id": "total_cost",
+        "name": "营业总成本",
+        "level": 0,
+        "base": "154868311110.52 元",
+        "current": "137548893694.33 元",
+        "delta": "-17319417416.19 元",
+        "yoy": "-11.18%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_total_cost",
+        "rawAmounts": {
+          "base": "154868311110.52",
+          "current": "137548893694.33",
+          "change": "-17319417416.19"
+        }
+      },
+      {
+        "id": "operating_cost",
+        "name": "营业成本",
+        "level": 0,
+        "base": "133496119623.36 元",
+        "current": "119641353216.21 元",
+        "delta": "-13854766407.15 元",
+        "yoy": "-10.38%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_operating_cost",
+        "rawAmounts": {
+          "base": "133496119623.36",
+          "current": "119641353216.21",
+          "change": "-13854766407.15"
+        }
+      },
+      {
+        "id": "interest_expense",
+        "name": "利息支出",
+        "level": 0,
+        "base": "158700589.03 元",
+        "current": "26783481.38 元",
+        "delta": "-131917107.65 元",
+        "yoy": "-83.12%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_interest_expense",
+        "rawAmounts": {
+          "base": "158700589.03",
+          "current": "26783481.38",
+          "change": "-131917107.65"
+        }
+      },
+      {
+        "id": "fee_expense",
+        "name": "手续费及佣金支出",
+        "level": 0,
+        "base": "364496.62 元",
+        "current": "321690.16 元",
+        "delta": "-42806.46 元",
+        "yoy": "-11.74%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_fee_expense",
+        "rawAmounts": {
+          "base": "364496.62",
+          "current": "321690.16",
+          "change": "-42806.46"
+        }
+      },
+      {
+        "id": "tax_surcharges",
+        "name": "税金及附加",
+        "level": 0,
+        "base": "1798827795.44 元",
+        "current": "1912423134.47 元",
+        "delta": "113595339.03 元",
+        "yoy": "6.31%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_tax_surcharges",
+        "rawAmounts": {
+          "base": "1798827795.44",
+          "current": "1912423134.47",
+          "change": "113595339.03"
+        }
+      },
+      {
+        "id": "selling_expense",
+        "name": "销售费用",
+        "level": 0,
+        "base": "9753022469.17 元",
+        "current": "8410739569.54 元",
+        "delta": "-1342282899.63 元",
+        "yoy": "-13.76%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_selling_expense",
+        "rawAmounts": {
+          "base": "9753022469.17",
+          "current": "8410739569.54",
+          "change": "-1342282899.63"
+        }
+      },
+      {
+        "id": "administrative_expense",
+        "name": "管理费用",
+        "level": 0,
+        "base": "6057608713.94 元",
+        "current": "5180260235.38 元",
+        "delta": "-877348478.56 元",
+        "yoy": "-14.48%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_administrative_expense",
+        "rawAmounts": {
+          "base": "6057608713.94",
+          "current": "5180260235.38",
+          "change": "-877348478.56"
+        }
+      },
+      {
+        "id": "rd_expense",
+        "name": "研发费用",
+        "level": 0,
+        "base": "6904084981.92 元",
+        "current": "6463100763.66 元",
+        "delta": "-440984218.26 元",
+        "yoy": "-6.39%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_rd_expense",
+        "rawAmounts": {
+          "base": "6904084981.92",
+          "current": "6463100763.66",
+          "change": "-440984218.26"
+        }
+      },
+      {
+        "id": "finance_expense",
+        "name": "财务费用",
+        "level": 0,
+        "base": "-3300417558.96 元",
+        "current": "-4086088396.47 元",
+        "delta": "-785670837.51 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_finance_expense",
+        "rawAmounts": {
+          "base": "-3300417558.96",
+          "current": "-4086088396.47",
+          "change": "-785670837.51"
+        }
+      },
+      {
+        "id": "other_income",
+        "name": "其他收益",
+        "level": 0,
+        "base": "2724657818.37 元",
+        "current": "1338729614.54 元",
+        "delta": "-1385928203.83 元",
+        "yoy": "-50.87%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_other_income",
+        "rawAmounts": {
+          "base": "2724657818.37",
+          "current": "1338729614.54",
+          "change": "-1385928203.83"
+        }
+      },
+      {
+        "id": "investment_income",
+        "name": "投资收益",
+        "level": 0,
+        "base": "560281846.36 元",
+        "current": "402248047.83 元",
+        "delta": "-158033798.53 元",
+        "yoy": "-28.21%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_investment_income",
+        "rawAmounts": {
+          "base": "560281846.36",
+          "current": "402248047.83",
+          "change": "-158033798.53"
+        }
+      },
+      {
+        "id": "fair_value_income",
+        "name": "公允价值变动收益",
+        "level": 0,
+        "base": "-273975504.34 元",
+        "current": "164255550.24 元",
+        "delta": "438231054.58 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_fair_value_income",
+        "rawAmounts": {
+          "base": "-273975504.34",
+          "current": "164255550.24",
+          "change": "438231054.58"
+        }
+      },
+      {
+        "id": "credit_impairment",
+        "name": "信用减值损失",
+        "level": 0,
+        "base": "-522432617.72 元",
+        "current": "511705453.46 元",
+        "delta": "1034138071.18 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_credit_impairment",
+        "rawAmounts": {
+          "base": "-522432617.72",
+          "current": "511705453.46",
+          "change": "1034138071.18"
+        }
+      },
+      {
+        "id": "asset_impairment",
+        "name": "资产减值损失",
+        "level": 0,
+        "base": "-686819202.27 元",
+        "current": "-1357124952.49 元",
+        "delta": "-670305750.22 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_asset_impairment",
+        "rawAmounts": {
+          "base": "-686819202.27",
+          "current": "-1357124952.49",
+          "change": "-670305750.22"
+        }
+      },
+      {
+        "id": "disposal_income",
+        "name": "资产处置收益",
+        "level": 0,
+        "base": "16965090.94 元",
+        "current": "52212257.62 元",
+        "delta": "35247166.68 元",
+        "yoy": "207.76%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_disposal_income",
+        "rawAmounts": {
+          "base": "16965090.94",
+          "current": "52212257.62",
+          "change": "35247166.68"
+        }
+      },
+      {
+        "id": "operating_profit",
+        "name": "营业利润",
+        "level": 0,
+        "base": "36988437925.6 元",
+        "current": "34681293552.28 元",
+        "delta": "-2307144373.32 元",
+        "yoy": "-6.24%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_operating_profit",
+        "rawAmounts": {
+          "base": "36988437925.6",
+          "current": "34681293552.28",
+          "change": "-2307144373.32"
+        }
+      },
+      {
+        "id": "nonoperating_income",
+        "name": "营业外收入",
+        "level": 0,
+        "base": "72190967.82 元",
+        "current": "79301701.3 元",
+        "delta": "7110733.48 元",
+        "yoy": "9.85%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_nonoperating_income",
+        "rawAmounts": {
+          "base": "72190967.82",
+          "current": "79301701.3",
+          "change": "7110733.48"
+        }
+      },
+      {
+        "id": "nonoperating_expense",
+        "name": "营业外支出",
+        "level": 0,
+        "base": "164633045.12 元",
+        "current": "115936302.46 元",
+        "delta": "-48696742.66 元",
+        "yoy": "-29.58%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_nonoperating_expense",
+        "rawAmounts": {
+          "base": "164633045.12",
+          "current": "115936302.46",
+          "change": "-48696742.66"
+        }
+      },
+      {
+        "id": "pretax_profit",
+        "name": "利润总额",
+        "level": 0,
+        "base": "36895995848.3 元",
+        "current": "34644658951.12 元",
+        "delta": "-2251336897.18 元",
+        "yoy": "-6.10%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_pretax_profit",
+        "rawAmounts": {
+          "base": "36895995848.3",
+          "current": "34644658951.12",
+          "change": "-2251336897.18"
+        }
+      },
+      {
+        "id": "income_tax",
+        "name": "所得税费用",
+        "level": 0,
+        "base": "4524926560.95 元",
+        "current": "5781912934.96 元",
+        "delta": "1256986374.01 元",
+        "yoy": "27.78%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_income_tax",
+        "rawAmounts": {
+          "base": "4524926560.95",
+          "current": "5781912934.96",
+          "change": "1256986374.01"
+        }
+      },
+      {
+        "id": "net_profit",
+        "name": "净利润",
+        "level": 0,
+        "base": "32371069287.35 元",
+        "current": "28862746016.16 元",
+        "delta": "-3508323271.19 元",
+        "yoy": "-10.84%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_net_profit",
+        "rawAmounts": {
+          "base": "32371069287.35",
+          "current": "28862746016.16",
+          "change": "-3508323271.19"
+        }
+      },
+      {
+        "id": "continuing_profit",
+        "name": "持续经营净利润",
+        "level": 0,
+        "base": "32311066123.1 元",
+        "current": "28884734398.13 元",
+        "delta": "-3426331724.97 元",
+        "yoy": "-10.60%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_continuing_profit",
+        "rawAmounts": {
+          "base": "32311066123.1",
+          "current": "28884734398.13",
+          "change": "-3426331724.97"
+        }
+      },
+      {
+        "id": "discontinued_profit",
+        "name": "终止经营净利润",
+        "level": 0,
+        "base": "60003164.25 元",
+        "current": "-21988381.97 元",
+        "delta": "-81991546.22 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_discontinued_profit",
+        "rawAmounts": {
+          "base": "60003164.25",
+          "current": "-21988381.97",
+          "change": "-81991546.22"
+        }
+      },
+      {
+        "id": "parent_profit",
+        "name": "归属于母公司股东的净利润",
+        "level": 0,
+        "base": "32184570372.28 元",
+        "current": "29003103411.66 元",
+        "delta": "-3181466960.62 元",
+        "yoy": "-9.89%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_parent_profit",
+        "rawAmounts": {
+          "base": "32184570372.28",
+          "current": "29003103411.66",
+          "change": "-3181466960.62"
+        }
+      },
+      {
+        "id": "minority_profit",
+        "name": "少数股东损益",
+        "level": 0,
+        "base": "186498915.07 元",
+        "current": "-140357395.5 元",
+        "delta": "-326856310.57 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_minority_profit",
+        "rawAmounts": {
+          "base": "186498915.07",
+          "current": "-140357395.5",
+          "change": "-326856310.57"
+        }
+      },
+      {
+        "id": "operating_cashflow",
+        "name": "经营活动产生的现金流量净额",
+        "level": 0,
+        "base": "29369250570.66 元",
+        "current": "46383114754.02 元",
+        "delta": "17013864183.36 元",
+        "yoy": "57.93%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_operating_cashflow",
+        "rawAmounts": {
+          "base": "29369250570.66",
+          "current": "46383114754.02",
+          "change": "17013864183.36"
+        }
+      },
+      {
+        "id": "adjusted_parent_profit",
+        "name": "归母净利润（扣非）",
+        "level": 0,
+        "base": "30099760382.99 元",
+        "current": "27706292436.94 元",
+        "delta": "-2393467946.05 元",
+        "yoy": "-7.95%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_adjusted_parent_profit",
+        "rawAmounts": {
+          "base": "30099760382.99",
+          "current": "27706292436.94",
+          "change": "-2393467946.05"
+        }
+      }
+    ],
+    "cashMetrics": [
+      {
+        "id": "cash_2",
+        "name": "销售商品、提供劳务收到的现金",
+        "level": 0,
+        "base": "171937113993.38 元",
+        "current": "180152594833.80 元",
+        "delta": "8215480840.42 元",
+        "yoy": "4.78%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_2",
+        "rawAmounts": {
+          "base": "171937113993.38",
+          "current": "180152594833.80",
+          "change": "8215480840.42"
+        }
+      },
+      {
+        "id": "cash_3",
+        "name": "客户存款和同业存放款项净增加额",
+        "level": 0,
+        "base": "50560729.20 元",
+        "current": "-97277745.41 元",
+        "delta": "-147838474.61 元",
+        "yoy": "未提供",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_3",
+        "rawAmounts": {
+          "base": "50560729.20",
+          "current": "-97277745.41",
+          "change": "-147838474.61"
+        }
+      },
+      {
+        "id": "cash_4",
+        "name": "收取利息、手续费及佣金的现金",
+        "level": 0,
+        "base": "690447891.17 元",
+        "current": "200053993.35 元",
+        "delta": "-490393897.82 元",
+        "yoy": "-71.03%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_4",
+        "rawAmounts": {
+          "base": "690447891.17",
+          "current": "200053993.35",
+          "change": "-490393897.82"
+        }
+      },
+      {
+        "id": "cash_5",
+        "name": "收到的税费返还",
+        "level": 0,
+        "base": "3596859028.53 元",
+        "current": "3374836508.02 元",
+        "delta": "-222022520.51 元",
+        "yoy": "-6.17%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_5",
+        "rawAmounts": {
+          "base": "3596859028.53",
+          "current": "3374836508.02",
+          "change": "-222022520.51"
+        }
+      },
+      {
+        "id": "cash_6",
+        "name": "收到其他与经营活动有关的现金",
+        "level": 0,
+        "base": "3249319163.59 元",
+        "current": "18284568266.19 元",
+        "delta": "15035249102.60 元",
+        "yoy": "462.72%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_6",
+        "rawAmounts": {
+          "base": "3249319163.59",
+          "current": "18284568266.19",
+          "change": "15035249102.60"
+        }
+      },
+      {
+        "id": "cash_7",
+        "name": "经营现金流入小计",
+        "level": 0,
+        "base": "179524300805.87 元",
+        "current": "201914775855.95 元",
+        "delta": "22390475050.08 元",
+        "yoy": "12.47%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_7",
+        "rawAmounts": {
+          "base": "179524300805.87",
+          "current": "201914775855.95",
+          "change": "22390475050.08"
+        }
+      },
+      {
+        "id": "cash_8",
+        "name": "购买商品、接受劳务支付的现金",
+        "level": 0,
+        "base": "108253725552.93 元",
+        "current": "117300948888.33 元",
+        "delta": "9047223335.40 元",
+        "yoy": "8.36%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_8",
+        "rawAmounts": {
+          "base": "108253725552.93",
+          "current": "117300948888.33",
+          "change": "9047223335.40"
+        }
+      },
+      {
+        "id": "cash_9",
+        "name": "客户贷款及垫款净增加额",
+        "level": 0,
+        "base": "1579170000.00 元",
+        "current": "1096845000.00 元",
+        "delta": "-482325000.00 元",
+        "yoy": "-30.54%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_9",
+        "rawAmounts": {
+          "base": "1579170000.00",
+          "current": "1096845000.00",
+          "change": "-482325000.00"
+        }
+      },
+      {
+        "id": "cash_10",
+        "name": "存放中央银行和同业款项净增加额",
+        "level": 0,
+        "base": "485197013.98 元",
+        "current": "35123619.38 元",
+        "delta": "-450073394.60 元",
+        "yoy": "-92.76%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_10",
+        "rawAmounts": {
+          "base": "485197013.98",
+          "current": "35123619.38",
+          "change": "-450073394.60"
+        }
+      },
+      {
+        "id": "cash_11",
+        "name": "支付利息、手续费及佣金的现金",
+        "level": 0,
+        "base": "157403936.47 元",
+        "current": "23127968.03 元",
+        "delta": "-134275968.44 元",
+        "yoy": "-85.31%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_11",
+        "rawAmounts": {
+          "base": "157403936.47",
+          "current": "23127968.03",
+          "change": "-134275968.44"
+        }
+      },
+      {
+        "id": "cash_12",
+        "name": "支付给职工以及为职工支付的现金",
+        "level": 0,
+        "base": "11779145121.58 元",
+        "current": "11967701115.43 元",
+        "delta": "188555993.85 元",
+        "yoy": "1.60%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_12",
+        "rawAmounts": {
+          "base": "11779145121.58",
+          "current": "11967701115.43",
+          "change": "188555993.85"
+        }
+      },
+      {
+        "id": "cash_13",
+        "name": "支付的各项税费",
+        "level": 0,
+        "base": "16976161858.63 元",
+        "current": "15902339423.32 元",
+        "delta": "-1073822435.31 元",
+        "yoy": "-6.33%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_13",
+        "rawAmounts": {
+          "base": "16976161858.63",
+          "current": "15902339423.32",
+          "change": "-1073822435.31"
+        }
+      },
+      {
+        "id": "cash_14",
+        "name": "支付其他与经营活动有关的现金",
+        "level": 0,
+        "base": "10924246751.62 元",
+        "current": "9205575087.44 元",
+        "delta": "-1718671664.18 元",
+        "yoy": "-15.73%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_14",
+        "rawAmounts": {
+          "base": "10924246751.62",
+          "current": "9205575087.44",
+          "change": "-1718671664.18"
+        }
+      },
+      {
+        "id": "cash_15",
+        "name": "经营现金流出小计",
+        "level": 0,
+        "base": "150155050235.21 元",
+        "current": "155531661101.93 元",
+        "delta": "5376610866.72 元",
+        "yoy": "3.58%",
+        "impact": "未提供",
+        "relation": "未提供",
+        "residual": "未提供",
+        "status": "后端来源核验通过",
+        "source": "F_FINAL_cash_15",
+        "rawAmounts": {
+          "base": "150155050235.21",
+          "current": "155531661101.93",
+          "change": "5376610866.72"
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "F_revenue",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "其中：营业收入 五、54 170,447,058,533.57 189,163,654,064.64",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "revenue"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_total_cost",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "二、营业总成本 137,548,893,694.33 154,868,311,110.52",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "total_cost"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_other_income",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "加：其他收益 五、61 1,338,729,614.54 2,724,657,818.37",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "other_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_operating_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "三、营业利润（亏损以“-”号填列） 34,681,293,552.28 36,988,437,925.60",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "operating_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_pretax_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "四、利润总额（亏损总额以“-”号填列） 34,644,658,951.12 36,895,995,848.30",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "pretax_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_income_tax",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "减：所得税费用 五、69 5,781,912,934.96 4,524,926,560.95",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "income_tax"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_net_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "五、净利润（净亏损以“-”号填列） 28,862,746,016.16 32,371,069,287.35",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "net_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_parent_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "1、归属于母公司股东的净利润（净亏损以“-”号填列） 29,003,103,411.66 32,184,570,372.28",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "parent_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_minority_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "2、少数股东损益（净亏损以“-”号填列） -140,357,395.50 186,498,915.07",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "minority_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_operating_cashflow",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "经营活动产生的现金流量净额 46,383,114,754.02 29,369,250,570.66",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E07_28",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "1.经营活动产生的现金流量净额同比变动 57.93%，主要系销售商品和提供劳务收到的现金增加、收到其他与经营活动有关\n的现金增加所致。",
+        "summary": "未提供",
+        "printPage": "28",
+        "pdfPage": "29",
+        "metrics": [
+          "net_profit",
+          "operating_cashflow"
+        ],
+        "basis": "yoy",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E07_29",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "报告期内公司经营活动产生的现金净流量与本年度净利润存在重大差异的原因说明\n适用 不适用\n主要受经营活动有关受限资金到期收回影响，具体详见第八节财务报告附注五 71、现金流量表补充资料。",
+        "summary": "未提供",
+        "printPage": "29",
+        "pdfPage": "30",
+        "metrics": [
+          "net_profit",
+          "operating_cashflow"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E07_179",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "票 据 保 证 金 等 净 减 少 额\n15,667,164,024.70 元",
+        "summary": "未提供",
+        "printPage": "179",
+        "pdfPage": "180",
+        "metrics": [
+          "net_profit",
+          "operating_cashflow",
+          "bill_deposits"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E08",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "（1）营业收入构成\n单位：元\n项目\n2025 年 2024 年\n同比增减\n金额 占营业收入\n比重 金额 占营业收\n入比重\n营业收入合计 170,447,058,533.57 100.00% 189,163,654,064.64 100.00% -9.89%\n分行业\n制造业 153,781,972,343.46 90.22% 169,715,353,002.47 89.72% -9.39%\n其他业务 16,665,086,190.11 9.78% 19,448,301,062.17 10.28% -14.31%\n分产品\n消费电器 133,055,208,627.13 78.06% 148,559,931,838.58 78.54% -10.44%\n工业制品及绿色能源 17,380,701,260.95 10.20% 17,246,185,690.02 9.12% 0.78%\n智能装备 680,790,474.57 0.40% 424,131,758.64 0.22% 60.51%\n其他主营 2,665,271,980.81 1.56% 3,485,103,715.23 1.84% -23.52%\n其他业务 16,665,086,190.11 9.78% 19,448,301,062.17 10.28% -14.31%\n分地区\n内销-主营业务 126,407,077,425.42 74.16% 141,512,822,056.59 74.81% -10.67%\n外销-主营业务 27,374,894,918.04 16.06% 28,202,530,945.88 14.91% -2.93%\n其他业务 16,665,086,190.11 9.78% 19,448,301,062.17 10.28% -14.31%",
+        "summary": "未提供",
+        "printPage": "23",
+        "pdfPage": "24",
+        "metrics": [
+          "revenue"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E09",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "61、 其他收益\n产生其他收益的来源 本期发生额 上期发生额\n政府补助 980,642,616.63 1,916,950,375.04\n增值税加计抵减及其他 358,086,997.91 807,707,443.33\n合计 1,338,729,614.54 2,724,657,818.37",
+        "summary": "未提供",
+        "printPage": "174",
+        "pdfPage": "175",
+        "metrics": [
+          "other_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E10",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "62、 投资收益\n项目 本期发生额 上期发生额\n交易性金融工具取得的投资收益 279,328,777.75 460,296,091.05\n权益法核算的长期股权投资收益 36,369,594.25 14,219,875.64\n衍生金融工具取得的投资收益 -37,033,030.37 150,970,608.40\n其他 123,582,706.20 -65,204,728.73\n合计 402,248,047.83 560,281,846.36",
+        "summary": "未提供",
+        "printPage": "174",
+        "pdfPage": "175",
+        "metrics": [
+          "investment_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E11",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "63、 公允价值变动收益\n产生公允价值变动收益的来源 本期发生额 上期发生额\n衍生金融工具 103,864,069.41 -273,556,968.51\n交易性金融工具 117,689,555.83 -5,658,203.37\n其他 -57,298,075.00 5,239,667.54\n合计 164,255,550.24 -273,975,504.34",
+        "summary": "未提供",
+        "printPage": "174",
+        "pdfPage": "175",
+        "metrics": [
+          "fair_value_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E12_A",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "64、 信用减值损失\n项目 本期发生额 上期发生额\n坏账损失 567,273,870.69 -528,495,906.55\n发放贷款和垫款减值损失 -55,568,417.23 2,985,793.17",
+        "summary": "未提供",
+        "printPage": "174",
+        "pdfPage": "175",
+        "metrics": [
+          "credit_impairment"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E12_B",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "项目 本期发生额 上期发生额\n买入返售业务减值损失 3,077,495.66\n合计 511,705,453.46 -522,432,617.72",
+        "summary": "未提供",
+        "printPage": "175",
+        "pdfPage": "176",
+        "metrics": [
+          "credit_impairment"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E13",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "类别 期初余额\n本期变动金额\n期末余额\n计提/收回/转回 核销\n单项计提 1,205,313,781.71 19,139,871.99 34,833,176.94 1,189,620,476.76\n账龄组合 2,242,140,497.50 -498,845,851.24 6,881,776.97 1,736,412,869.29\n低风险组合 277,507,423.50 -124,222,634.51 153,284,788.99\n合计 3,724,961,702.71 -603,928,613.76 41,714,953.91 3,079,318,135.04\n【注】本期无重要的坏账准备收回或转回金额情况。",
+        "summary": "未提供",
+        "printPage": "132",
+        "pdfPage": "133",
+        "metrics": [
+          "credit_impairment"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E14_A",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "（3）本期计提在建工程减值准备情况\n项目 期初余额 本期增加\n本期减少\n期末余额\n转入固定资产金额 处置\n格力钛工程【注】 148,185,180.76 995,970,112.10 1,780,670.23 209,319.44 1,142,165,303.19\n其他 13,085,461.05 163,369.76 878,539.82 12,370,290.99",
+        "summary": "未提供",
+        "printPage": "153",
+        "pdfPage": "154",
+        "metrics": [
+          "asset_impairment"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E14_B",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "项目 期初余额 本期增加 本期减少 期末余额\n合计 161,270,641.81 996,133,481.86 2,659,210.05 209,319.44 1,154,535,594.18\n【注】根据公司规划，格力钛部分在建工程后续不再建设，相关资产已无法为企业带来预期经济利益流入，根据准则规定计提相应减值准备。\n（4）在建工程的减值测试情况\n项目 账面价值 可收回金额 减值金额 公允价值和处置费用的确定方式 关键参数 关键参数的确定依据\n格力钛工程 1,425,543,675.40 283,378,372.21 1,142,165,303.19 按预计残余变现价值确认可收回金额 资产可回收残值率 参考历史处置经验及预\n计废料回收价值",
+        "summary": "未提供",
+        "printPage": "154",
+        "pdfPage": "155",
+        "metrics": [
+          "asset_impairment"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E15",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "65、 资产减值损失\n项目 本期发生额 上期发生额\n存货跌价损失 553,793.70 -144,034,693.43\n商誉减值损失 -43,611,168.04 -266,698,403.06\n合同资产减值损失 50,781,070.47 243,583,872.94\n固定资产减值损失 -352,568,639.87 -333,067,391.82\n在建工程减值损失 -996,133,481.86 -139,998,209.31\n其他资产减值损失 -16,146,526.89 -46,604,377.59\n合计 -1,357,124,952.49 -686,819,202.27",
+        "summary": "未提供",
+        "printPage": "175",
+        "pdfPage": "176",
+        "metrics": [
+          "asset_impairment"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E16",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "项目 本期发生额 上期发生额\n当期所得税费用 4,938,057,705.47 5,695,658,290.98\n递延所得税费用 843,855,229.49 -1,170,731,730.03\n合计 5,781,912,934.96 4,524,926,560.95",
+        "summary": "未提供",
+        "printPage": "176",
+        "pdfPage": "177",
+        "metrics": [
+          "income_tax"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E17",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "（2）会计利润与所得税费用调整过程\n项目 本期发生额\n利润总额 34,644,658,951.12\n按法定/适用税率计算的所得税费用 5,196,698,842.67\n子公司适用不同税率的影响 123,745,930.62\n不可抵扣的成本、费用和损失的影响 56,089,475.77\n本期未确认递延所得税资产的可抵扣暂时性差异或可\n抵扣亏损的影响 1,156,414,876.08\n其他 -751,036,190.18\n所得税费用 5,781,912,934.96",
+        "summary": "未提供",
+        "printPage": "176",
+        "pdfPage": "177",
+        "metrics": [
+          "income_tax"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E18",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "一、经营活动产生的现金流量：\n销售商品、提供劳务收到的现金 180,152,594,833.80 171,937,113,993.38\n客户存款和同业存放款项净增加额 -97,277,745.41 50,560,729.20\n向中央银行借款净增加额\n向其他金融机构拆入资金净增加额\n收取利息、手续费及佣金的现金 200,053,993.35 690,447,891.17\n拆入资金净增加额\n回购业务资金净增加额\n收到的税费返还 3,374,836,508.02 3,596,859,028.53\n收到其他与经营活动有关的现金 五、70（1） 18,284,568,266.19 3,249,319,163.59\n经营活动现金流入小计 201,914,775,855.95 179,524,300,805.87\n购买商品、接受劳务支付的现金 117,300,948,888.33 108,253,725,552.93\n客户贷款及垫款净增加额 1,096,845,000.00 1,579,170,000.00\n存放中央银行和同业款项净增加额 35,123,619.38 485,197,013.98\n拆出资金净增加额\n支付利息、手续费及佣金的现金 23,127,968.03 157,403,936.47\n支付给职工以及为职工支付的现金 11,967,701,115.43 11,779,145,121.58\n支付的各项税费 15,902,339,423.32 16,976,161,858.63\n支付其他与经营活动有关的现金 五、70（1） 9,205,575,087.44 10,924,246,751.62\n经营活动现金流出小计 155,531,661,101.93 150,155,050,235.21\n经营活动产生的现金流量净额 46,383,114,754.02 29,369,250,570.66",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "E19",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "70、 现金流量表项目\n（1）与经营活动相关的现金流\n1) 收到的其他与经营活动有关的现金\n项目 本期发生额 上期发生额\n政府补助 868,886,645.06 1,799,273,956.24\n利息收入 526,443,161.94 315,360,111.29\n票据、保函保证金等经营活动有关\n受限资金净减少额 15,667,164,024.70\n押金、保证金及其他 1,222,074,434.49 1,134,685,096.06\n合计 18,284,568,266.19 3,249,319,163.59\n2) 支付的其他与经营活动有关的现金\n项目 本期发生额 上期发生额\n销售费用支付的现金 6,778,770,943.20 7,185,012,975.87\n管理费用及研发费用支付的现金 1,567,955,758.34 1,648,760,232.90\n票据、保函保证金等经营活动有关\n受限资金净增加额 950,809,072.53\n归还代垫工程款 21,684,919.23\n支付履约、投标保证金及其他 858,848,385.90 1,117,979,551.09\n合计 9,205,575,087.44 10,924,246,751.62",
+        "summary": "未提供",
+        "printPage": "176",
+        "pdfPage": "177",
+        "metrics": [
+          "operating_cashflow",
+          "bill_deposits"
+        ],
+        "basis": "current_period",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_total_revenue",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "一、营业总收入 171,118,161,275.41 190,038,071,604.78",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "total_revenue"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_interest_income",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "利息收入 五、55 671,102,741.84 874,417,456.85",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "interest_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_operating_cost",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "其中：营业成本 五、54 119,641,353,216.21 133,496,119,623.36",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "operating_cost"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_interest_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "利息支出 五、55 26,783,481.38 158,700,589.03",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "interest_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_fee_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "手续费及佣金支出 321,690.16 364,496.62",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "fee_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_tax_surcharges",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "税金及附加 五、56 1,912,423,134.47 1,798,827,795.44",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "tax_surcharges"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_selling_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "销售费用 五、57 8,410,739,569.54 9,753,022,469.17",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "selling_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_administrative_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "管理费用 五、58 5,180,260,235.38 6,057,608,713.94",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "administrative_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_rd_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "研发费用 五、59 6,463,100,763.66 6,904,084,981.92",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "rd_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_finance_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "财务费用 五、60 -4,086,088,396.47 -3,300,417,558.96",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "finance_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_investment_income",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "投资收益（损失以“-”号填列） 五、62 402,248,047.83 560,281,846.36",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "investment_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_fair_value_income",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "公允价值变动收益（损失以“-”号填列） 五、63 164,255,550.24 -273,975,504.34",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "fair_value_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_credit_impairment",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "信用减值损失（损失以“-”号填列） 五、64 511,705,453.46 -522,432,617.72",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "credit_impairment"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_asset_impairment",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "资产减值损失（损失以“-”号填列） 五、65 -1,357,124,952.49 -686,819,202.27",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "asset_impairment"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_disposal_income",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "资产处置收益（损失以“-”号填列） 五、66 52,212,257.62 16,965,090.94",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "disposal_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_nonoperating_income",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "加：营业外收入 五、67 79,301,701.30 72,190,967.82",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "nonoperating_income"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_nonoperating_expense",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "减：营业外支出 五、68 115,936,302.46 164,633,045.12",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "nonoperating_expense"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_continuing_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "1、持续经营净利润（净亏损以“-”号填列） 28,884,734,398.13 32,311,066,123.10",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "continuing_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_discontinued_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "2、终止经营净利润（净亏损以“-”号填列） -21,988,381.97 60,003,164.25",
+        "summary": "未提供",
+        "printPage": "87",
+        "pdfPage": "88",
+        "metrics": [
+          "discontinued_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_adjusted_parent_profit",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "归属于上市公司股东的扣除非\n经常性损益的净利润（元） 27,706,292,436.94 30,099,760,382.99 -7.95% 27,565,461,117.79\n经营活动产生的现金流量净额\n（元） 46,383,114,754.02 29,369,250,570.66 57.93% 56,398,426,354.17\n基本每股收益（元/",
+        "summary": "未提供",
+        "printPage": "6",
+        "pdfPage": "7",
+        "metrics": [
+          "adjusted_parent_profit"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_2",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "销售商品、提供劳务收到的现金 180,152,594,833.80 171,937,113,993.38",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_2",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_3",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "客户存款和同业存放款项净增加额 -97,277,745.41 50,560,729.20",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_3",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_4",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "收取利息、手续费及佣金的现金 200,053,993.35 690,447,891.17",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_4",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_5",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "收到的税费返还 3,374,836,508.02 3,596,859,028.53",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_5",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_6",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "收到其他与经营活动有关的现金 五、70（1） 18,284,568,266.19 3,249,319,163.59",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_6",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_7",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "经营活动现金流入小计 201,914,775,855.95 179,524,300,805.87",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_7",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_8",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "购买商品、接受劳务支付的现金 117,300,948,888.33 108,253,725,552.93",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_8",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_9",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "客户贷款及垫款净增加额 1,096,845,000.00 1,579,170,000.00",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_9",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_10",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "存放中央银行和同业款项净增加额 35,123,619.38 485,197,013.98",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_10",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_11",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "支付利息、手续费及佣金的现金 23,127,968.03 157,403,936.47",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_11",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_12",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "支付给职工以及为职工支付的现金 11,967,701,115.43 11,779,145,121.58",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_12",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_13",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "支付的各项税费 15,902,339,423.32 16,976,161,858.63",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_13",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_14",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "支付其他与经营活动有关的现金 五、70（1） 9,205,575,087.44 10,924,246,751.62",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_14",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      },
+      {
+        "id": "F_FINAL_cash_15",
+        "fileName": "格力2025年年度报告.pdf",
+        "quote": "经营活动现金流出小计 155,531,661,101.93 150,155,050,235.21",
+        "summary": "未提供",
+        "printPage": "88",
+        "pdfPage": "89",
+        "metrics": [
+          "cash_15",
+          "operating_cashflow"
+        ],
+        "basis": "both_periods",
+        "verification": "后端本地年报来源核验通过",
+        "supportLimit": "仅为来源核验通过的披露原文；不代表 Agent 已读取或因果解释成立。"
+      }
+    ],
+    "explanations": [],
+    "steps": [
+      {
+        "round": 1,
+        "action": "search",
+        "label": "执行 search",
+        "summary": "返回来源编号：E07_28, F_net_profit",
+        "params": "{\"query\": \"净利润与经营活动现金流量净额差异原因\", \"metric_id\": \"net_profit\"}",
+        "result": "E07_28, F_net_profit",
+        "links": [
+          "E07_28",
+          "F_net_profit"
+        ]
+      },
+      {
+        "round": 2,
+        "action": "get",
+        "label": "执行 get",
+        "summary": "返回来源编号：F_operating_cashflow",
+        "params": "{\"evidence_id\": \"F_operating_cashflow\"}",
+        "result": "F_operating_cashflow",
+        "links": [
+          "F_operating_cashflow"
+        ]
+      },
+      {
+        "round": 3,
+        "action": "error",
+        "label": "响应被阻断，未形成有效动作",
+        "summary": "incomplete_response",
+        "params": "{}",
+        "result": "未执行工具；没有合规解释提交",
+        "links": [],
+        "error": "incomplete_response"
+      }
+    ],
+    "agentSummary": {
+      "simulation": false,
+      "llm_called": true,
+      "real_request_attempts": 3,
+      "rounds": 3,
+      "tool_calls": 2,
+      "errors": [
+        "incomplete_response"
+      ],
+      "stop_reason": "invalid_decision_or_tool_error"
+    },
+    "notices": [
+      "真实历史调查记录；浏览页面不会调用模型。",
+      "仅展示通过现有来源验证且具有后端金额输出的记录；没有调用模型补值。",
+      "没有通过验收的最终解释；响应截断片段不作为解释展示。",
+      "新增区域为后端离线结果回放；未导入的能力保持未提供。"
+    ],
+    "modules": {
+      "snapshotId": "20261017T093152-d80de1cefa",
+      "sections": [
+        {
+          "kind": "report",
+          "title": "结构化研报纠错",
+          "columns": [
+            "字段",
+            "后端结果"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "核查状态",
+                "发现错误"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "原始陈述",
+                "格力2025年净利润较2024年增长35.0832亿元。"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "company",
+                "珠海格力电器股份有限公司"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "period",
+                "2025"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "base_period",
+                "2024"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "metric_id",
+                "net_profit"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "metric_name",
+                "净利润"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "scope",
+                "披露口径的合并报表；合并范围变动，非恒定主体比较"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "comparison_basis",
+                "yoy"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "value_kind",
+                "change_magnitude"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "value",
+                "35.0832"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "unit",
+                "亿元"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "direction",
+                "增长"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "错误类型",
+                "方向错误"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "纠错建议",
+                "珠海格力电器股份有限公司2025年净利润：同比下降 35.0832 亿元；较2024年下降。"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "可信事实 value",
+                "35.0832"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "可信事实 unit",
+                "亿元"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "可信事实 direction",
+                "下降"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "可信事实 base_yuan",
+                "32371069287.35"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "可信事实 current_yuan",
+                "28862746016.16"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "可信事实 change_yuan",
+                "-3508323271.19"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "核验过程",
+                "公司、两期、指标名称、披露合并口径及同比基准匹配"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "核验过程",
+                "复用可信事实查询与年报来源核验结果"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "核验过程",
+                "基期 32371069287.35 元；本期 28862746016.16 元；已有差额 -3508323271.19 元"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "核验过程",
+                "按 亿元 换算后 ROUND_HALF_UP 展示 4 位：35.0832"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "核验过程",
+                "只核查结构化字段；原始文字未自动解析，需人工确认字段忠实于原文"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "人为构造的错误陈述，不是真实已发表研报。",
+            "离线结果回放；仅支持结构化陈述，原文转写、复杂语义和经营因果需要人工复核。"
+          ],
+          "runId": "92ddd5a529414b028c8613414f40ac0c",
+          "hashes": {
+            "result.json": "54d01aea5ea912afa297d7c0662560b71f005d652dc469cab720fef9479afb24"
+          }
+        },
+        {
+          "kind": "pdf",
+          "title": "PDF 原文提取 → 金额结构化 → 来源核验 → 财务分析",
+          "columns": [
+            "科目",
+            "年份",
+            "PDF 提取值",
+            "可信事实值",
+            "单位",
+            "来源",
+            "PDF 页",
+            "印刷页",
+            "提取状态",
+            "核对状态",
+            "原始行",
+            "来源 SHA256"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "营业利润",
+                "2024",
+                "36988437925.60",
+                "36988437925.6",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "三、营业利润（亏损以“-”号填列） 34,681,293,552.28 36,988,437,925.60",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_operating_profit"
+              ]
+            },
+            {
+              "cells": [
+                "营业利润",
+                "2025",
+                "34681293552.28",
+                "34681293552.28",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "三、营业利润（亏损以“-”号填列） 34,681,293,552.28 36,988,437,925.60",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_operating_profit"
+              ]
+            },
+            {
+              "cells": [
+                "利润总额",
+                "2024",
+                "36895995848.30",
+                "36895995848.3",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "四、利润总额（亏损总额以“-”号填列） 34,644,658,951.12 36,895,995,848.30",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_pretax_profit"
+              ]
+            },
+            {
+              "cells": [
+                "利润总额",
+                "2025",
+                "34644658951.12",
+                "34644658951.12",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "四、利润总额（亏损总额以“-”号填列） 34,644,658,951.12 36,895,995,848.30",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_pretax_profit"
+              ]
+            },
+            {
+              "cells": [
+                "净利润",
+                "2024",
+                "32371069287.35",
+                "32371069287.35",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "五、净利润（净亏损以“-”号填列） 28,862,746,016.16 32,371,069,287.35",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "净利润",
+                "2025",
+                "28862746016.16",
+                "28862746016.16",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "五、净利润（净亏损以“-”号填列） 28,862,746,016.16 32,371,069,287.35",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "所得税费用",
+                "2024",
+                "4524926560.95",
+                "4524926560.95",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "减：所得税费用 五、69 5,781,912,934.96 4,524,926,560.95",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_income_tax"
+              ]
+            },
+            {
+              "cells": [
+                "所得税费用",
+                "2025",
+                "5781912934.96",
+                "5781912934.96",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "减：所得税费用 五、69 5,781,912,934.96 4,524,926,560.95",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_income_tax"
+              ]
+            },
+            {
+              "cells": [
+                "归属于母公司股东的净利润",
+                "2024",
+                "32184570372.28",
+                "32184570372.28",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "1、归属于母公司股东的净利润（净亏损以“-”号填列） 29,003,103,411.66 32,184,570,372.28",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_parent_profit"
+              ]
+            },
+            {
+              "cells": [
+                "归属于母公司股东的净利润",
+                "2025",
+                "29003103411.66",
+                "29003103411.66",
+                "元",
+                "格力2025年年度报告.pdf",
+                "88",
+                "87",
+                "extracted",
+                "matched",
+                "1、归属于母公司股东的净利润（净亏损以“-”号填列） 29,003,103,411.66 32,184,570,372.28",
+                "eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054"
+              ],
+              "evidenceIds": [
+                "F_parent_profit"
+              ]
+            }
+          ],
+          "notices": [
+            "离线结果回放；指定格力年报合并利润表、页码及科目映射，金额来自 PDF 文本。",
+            "两期均采用 2025 年报比较列；同源一致性核对不是独立第三方审计。不支持任意 PDF、OCR 或在线上传。"
+          ],
+          "runId": "20261017T195532-0c947edc10",
+          "hashes": {
+            "extracted_financial.json": "ad8ca543c3d2a1068eebfba61af208d35dd1ad252727d557893f8d426538809f",
+            "comparison.json": "68af0b7cd48ac24a2cf6891790bd16fe77b9d1426198a4bc6530f1a21ada6c39",
+            "extraction_audit.json": "c8f5476e55c38d75b8d77bbccaf87143102ff948b3040c5de4966069d9f78bc8"
+          }
+        },
+        {
+          "kind": "profit",
+          "title": "利润总额 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：利润总额",
+                "36895995848.3",
+                "34644658951.12",
+                "-2251336897.18",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_pretax_profit"
+              ]
+            },
+            {
+              "cells": [
+                "营业利润",
+                "36988437925.6",
+                "34681293552.28",
+                "-2307144373.32",
+                "-2307144373.32",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_operating_profit"
+              ]
+            },
+            {
+              "cells": [
+                "营业外收入",
+                "72190967.82",
+                "79301701.3",
+                "7110733.48",
+                "7110733.48",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_nonoperating_income"
+              ]
+            },
+            {
+              "cells": [
+                "营业外支出",
+                "164633045.12",
+                "115936302.46",
+                "-48696742.66",
+                "48696742.66",
+                "-1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_nonoperating_expense"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "36895995848.30",
+                "34644658951.12",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "profit",
+          "title": "净利润 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：净利润",
+                "32371069287.35",
+                "28862746016.16",
+                "-3508323271.19",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "利润总额",
+                "36895995848.3",
+                "34644658951.12",
+                "-2251336897.18",
+                "-2251336897.18",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_pretax_profit"
+              ]
+            },
+            {
+              "cells": [
+                "所得税费用",
+                "4524926560.95",
+                "5781912934.96",
+                "1256986374.01",
+                "-1256986374.01",
+                "-1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_income_tax"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "32371069287.35",
+                "28862746016.16",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "profit",
+          "title": "归属于母公司股东的净利润 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：归属于母公司股东的净利润",
+                "32184570372.28",
+                "29003103411.66",
+                "-3181466960.62",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_parent_profit"
+              ]
+            },
+            {
+              "cells": [
+                "净利润",
+                "32371069287.35",
+                "28862746016.16",
+                "-3508323271.19",
+                "-3508323271.19",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_net_profit"
+              ]
+            },
+            {
+              "cells": [
+                "少数股东损益",
+                "186498915.07",
+                "-140357395.5",
+                "-326856310.57",
+                "326856310.57",
+                "-1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_minority_profit"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "32184570372.28",
+                "29003103411.66",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "profit",
+          "title": "营业利润 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：营业利润",
+                "36988437925.6",
+                "34681293552.28",
+                "-2307144373.32",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_operating_profit"
+              ]
+            },
+            {
+              "cells": [
+                "营业总收入",
+                "190038071604.78",
+                "171118161275.41",
+                "-18919910329.37",
+                "-18919910329.37",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_total_revenue"
+              ]
+            },
+            {
+              "cells": [
+                "营业总成本",
+                "154868311110.52",
+                "137548893694.33",
+                "-17319417416.19",
+                "17319417416.19",
+                "-1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_total_cost"
+              ]
+            },
+            {
+              "cells": [
+                "其他收益",
+                "2724657818.37",
+                "1338729614.54",
+                "-1385928203.83",
+                "-1385928203.83",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_other_income"
+              ]
+            },
+            {
+              "cells": [
+                "投资收益",
+                "560281846.36",
+                "402248047.83",
+                "-158033798.53",
+                "-158033798.53",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_investment_income"
+              ]
+            },
+            {
+              "cells": [
+                "公允价值变动收益",
+                "-273975504.34",
+                "164255550.24",
+                "438231054.58",
+                "438231054.58",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_fair_value_income"
+              ]
+            },
+            {
+              "cells": [
+                "信用减值损失",
+                "-522432617.72",
+                "511705453.46",
+                "1034138071.18",
+                "1034138071.18",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_credit_impairment"
+              ]
+            },
+            {
+              "cells": [
+                "资产减值损失",
+                "-686819202.27",
+                "-1357124952.49",
+                "-670305750.22",
+                "-670305750.22",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_asset_impairment"
+              ]
+            },
+            {
+              "cells": [
+                "资产处置收益",
+                "16965090.94",
+                "52212257.62",
+                "35247166.68",
+                "35247166.68",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_disposal_income"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "36988437925.60",
+                "34681293552.28",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "profit",
+          "title": "营业总成本 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：营业总成本",
+                "154868311110.52",
+                "137548893694.33",
+                "-17319417416.19",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_total_cost"
+              ]
+            },
+            {
+              "cells": [
+                "营业成本",
+                "133496119623.36",
+                "119641353216.21",
+                "-13854766407.15",
+                "-13854766407.15",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_operating_cost"
+              ]
+            },
+            {
+              "cells": [
+                "利息支出",
+                "158700589.03",
+                "26783481.38",
+                "-131917107.65",
+                "-131917107.65",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_interest_expense"
+              ]
+            },
+            {
+              "cells": [
+                "手续费及佣金支出",
+                "364496.62",
+                "321690.16",
+                "-42806.46",
+                "-42806.46",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_fee_expense"
+              ]
+            },
+            {
+              "cells": [
+                "税金及附加",
+                "1798827795.44",
+                "1912423134.47",
+                "113595339.03",
+                "113595339.03",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_tax_surcharges"
+              ]
+            },
+            {
+              "cells": [
+                "销售费用",
+                "9753022469.17",
+                "8410739569.54",
+                "-1342282899.63",
+                "-1342282899.63",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_selling_expense"
+              ]
+            },
+            {
+              "cells": [
+                "管理费用",
+                "6057608713.94",
+                "5180260235.38",
+                "-877348478.56",
+                "-877348478.56",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_administrative_expense"
+              ]
+            },
+            {
+              "cells": [
+                "研发费用",
+                "6904084981.92",
+                "6463100763.66",
+                "-440984218.26",
+                "-440984218.26",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_rd_expense"
+              ]
+            },
+            {
+              "cells": [
+                "财务费用",
+                "-3300417558.96",
+                "-4086088396.47",
+                "-785670837.51",
+                "-785670837.51",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_finance_expense"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "154868311110.52",
+                "137548893694.33",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "profit",
+          "title": "营业总收入 · incomplete",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：营业总收入",
+                "190038071604.78",
+                "171118161275.41",
+                "-18919910329.37",
+                "未提供",
+                "目标",
+                "incomplete"
+              ],
+              "evidenceIds": [
+                "F_FINAL_total_revenue"
+              ]
+            },
+            {
+              "cells": [
+                "营业收入",
+                "189163654064.64",
+                "170447058533.57",
+                "-18716595531.07",
+                "-18716595531.07",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_revenue"
+              ]
+            },
+            {
+              "cells": [
+                "利息收入",
+                "874417456.85",
+                "671102741.84",
+                "-203314715.01",
+                "-203314715.01",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_interest_income"
+              ]
+            },
+            {
+              "cells": [
+                "手续费及佣金收入",
+                "83.29",
+                "未提供",
+                "未提供",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "190038071604.78",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供",
+                "incomplete"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项：fee_income"
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "cash",
+          "title": "经营现金流入小计 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：经营现金流入小计",
+                "179524300805.87",
+                "201914775855.95",
+                "22390475050.08",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_7"
+              ]
+            },
+            {
+              "cells": [
+                "销售商品、提供劳务收到的现金",
+                "171937113993.38",
+                "180152594833.80",
+                "8215480840.42",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_2"
+              ]
+            },
+            {
+              "cells": [
+                "客户存款和同业存放款项净增加额",
+                "50560729.20",
+                "-97277745.41",
+                "-147838474.61",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_3"
+              ]
+            },
+            {
+              "cells": [
+                "收取利息、手续费及佣金的现金",
+                "690447891.17",
+                "200053993.35",
+                "-490393897.82",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_4"
+              ]
+            },
+            {
+              "cells": [
+                "收到的税费返还",
+                "3596859028.53",
+                "3374836508.02",
+                "-222022520.51",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_5"
+              ]
+            },
+            {
+              "cells": [
+                "收到其他与经营活动有关的现金",
+                "3249319163.59",
+                "18284568266.19",
+                "15035249102.60",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_6"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "179524300805.87",
+                "201914775855.95",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "cash_bridges.json": "ec4040bcc5a751f6283ded29caf87e50e38c0fd105a26a2c128d06f67fc03364",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "cash",
+          "title": "经营现金流出小计 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：经营现金流出小计",
+                "150155050235.21",
+                "155531661101.93",
+                "5376610866.72",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_15"
+              ]
+            },
+            {
+              "cells": [
+                "购买商品、接受劳务支付的现金",
+                "108253725552.93",
+                "117300948888.33",
+                "9047223335.40",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_8"
+              ]
+            },
+            {
+              "cells": [
+                "客户贷款及垫款净增加额",
+                "1579170000.00",
+                "1096845000.00",
+                "-482325000.00",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_9"
+              ]
+            },
+            {
+              "cells": [
+                "存放中央银行和同业款项净增加额",
+                "485197013.98",
+                "35123619.38",
+                "-450073394.60",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_10"
+              ]
+            },
+            {
+              "cells": [
+                "支付利息、手续费及佣金的现金",
+                "157403936.47",
+                "23127968.03",
+                "-134275968.44",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_11"
+              ]
+            },
+            {
+              "cells": [
+                "支付给职工以及为职工支付的现金",
+                "11779145121.58",
+                "11967701115.43",
+                "188555993.85",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_12"
+              ]
+            },
+            {
+              "cells": [
+                "支付的各项税费",
+                "16976161858.63",
+                "15902339423.32",
+                "-1073822435.31",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_13"
+              ]
+            },
+            {
+              "cells": [
+                "支付其他与经营活动有关的现金",
+                "10924246751.62",
+                "9205575087.44",
+                "-1718671664.18",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_14"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "150155050235.21",
+                "155531661101.93",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "cash_bridges.json": "ec4040bcc5a751f6283ded29caf87e50e38c0fd105a26a2c128d06f67fc03364",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "cash",
+          "title": "经营活动现金流净额 · exact_zero_residual",
+          "columns": [
+            "项目",
+            "基期（元）",
+            "本期（元）",
+            "自身变化（元）",
+            "对本目标影响（元）",
+            "会计符号",
+            "状态"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "目标：经营活动现金流净额",
+                "29369250570.66",
+                "46383114754.02",
+                "17013864183.36",
+                "未提供",
+                "目标",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": [
+                "F_operating_cashflow"
+              ]
+            },
+            {
+              "cells": [
+                "经营现金流入小计",
+                "179524300805.87",
+                "201914775855.95",
+                "22390475050.08",
+                "未提供",
+                "1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_7"
+              ]
+            },
+            {
+              "cells": [
+                "经营现金流出小计",
+                "150155050235.21",
+                "155531661101.93",
+                "5376610866.72",
+                "未提供",
+                "-1",
+                "组成项"
+              ],
+              "evidenceIds": [
+                "F_FINAL_cash_15"
+              ]
+            },
+            {
+              "cells": [
+                "后端组成项合计",
+                "29369250570.66",
+                "46383114754.02",
+                "未提供",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "残差（披露目标 − 组成项）",
+                "0.00",
+                "0.00",
+                "0.00",
+                "未提供",
+                "未提供",
+                "exact_zero_residual"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "逐个目标展示，父子项目不重复加总。金额及残差直接取自后端，网页不计算。",
+            "现金流贡献未提供时保持缺失；闭合不证明经营因果。缺失项："
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "cash_bridges.json": "ec4040bcc5a751f6283ded29caf87e50e38c0fd105a26a2c128d06f67fc03364",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c"
+          }
+        },
+        {
+          "kind": "verification",
+          "title": "财务来源核验及历史冲突",
+          "columns": [
+            "项目",
+            "数量或年份",
+            "状态",
+            "公开来源",
+            "PDF 页",
+            "印刷页"
+          ],
+          "rows": [
+            {
+              "cells": [
+                "核心输入",
+                "31",
+                "未改变",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史冲突已解决",
+                "9",
+                "resolved",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "当前未解决",
+                "0",
+                "当前修订快照",
+                "未提供",
+                "未提供",
+                "未提供"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 period_conflict",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "177",
+                "176"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 period_conflict",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "177",
+                "176"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 source_locator",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "177",
+                "176"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 source_locator",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "177",
+                "176"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 source_locator",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "180",
+                "179"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 source_locator",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "131",
+                "130"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 source_locator",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "138",
+                "137"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 word_display_conflict",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "175",
+                "174"
+              ],
+              "evidenceIds": []
+            },
+            {
+              "cells": [
+                "历史 word_display_conflict",
+                "未提供",
+                "resolved",
+                "格力2025年年度报告.pdf",
+                "175",
+                "174"
+              ],
+              "evidenceIds": []
+            }
+          ],
+          "notices": [
+            "历史冲突采用最终修订状态，不复用旧的待修正说明；内部原文不导出。",
+            "经营因果仍需人工复核；cash_26、cash_27 本期空白，不计算变化，不开放为同比事实。"
+          ],
+          "runId": "20261017T093152-d80de1cefa",
+          "hashes": {
+            "bridges.json": "9f518d265307919ca17fe13f768b05472b957c8ae7594a9bf436ab910d61f4b1",
+            "cash_bridges.json": "ec4040bcc5a751f6283ded29caf87e50e38c0fd105a26a2c128d06f67fc03364",
+            "directional_impacts.csv": "4de6b4edad09e991eb004ff2098fd5a395eb85fc5e6a247751597a0772fd050c",
+            "revision_checks.json": "246c86e00342bab1d87f50043fbce40c4c5b575c702c78940e05424e9035d731",
+            "conflicts.json": "a1e7531aa2e23a9f51836087d0a70efd0270997454447b091cd0c9d2ff107e3d"
+          }
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "snapshotId": "20261017T093152-d80de1cefa",
+    "agentRunId": "20261017T151343-d0d3b954f5",
+    "financialSha256": "474da4618a02903539ae6ec9fe1962b6b0a2dd2e2b3de09d6a101f432462a7d6",
+    "cashSha256": "0caf071fa62064370d640396b851a74b14c80d9cdcfeaeba3f4e7d1b4768bcaf",
+    "eventsSha256": "d7cfd110ada5dada69c4648847fa5a7c004ce529d65f512979a41cbf5893bd2c",
+    "resultSha256": "b8b5239dc7a514cf5cfae65a95f295f4235bc7d2a7017bcf826b070f4e8c336a"
+  }
+}

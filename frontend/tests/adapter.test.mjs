@@ -58,3 +58,17 @@ test('local real export maps every amount unchanged',{skip:!fs.existsSync(realPa
   assert.deepEqual(r.evidence,f.record.evidence); assert.deepEqual(r.steps,f.record.steps)
   assert.equal(r.explanations.length,0)
 })
+
+test('optional modules preserve exact strings and old bundles remain supported',()=>{
+  const f=fixture(); f.record.modules={snapshotId:'snapshot',sections:[{kind:'report',title:'合成',columns:['值'],rows:[{cells:['9007199254740993.10'],evidenceIds:[]}],notices:[],runId:'test',hashes:{'result.json':'a'.repeat(64)}}]}
+  assert.deepEqual(adaptDisplayBundle(f).modules,f.record.modules)
+  delete f.record.modules; assert.equal(adaptDisplayBundle(f).modules,undefined)
+})
+test('module cross snapshot, unknown fields and unlinked evidence are rejected',()=>{
+  for(const mutate of [m=>m.snapshotId='wrong',m=>m.sections[0].rows[0].evidenceIds=['fake'],m=>m.sections[0].raw_log='hidden',m=>m.sections[0].rows[0].cells=[123]]) {
+    const f=fixture();f.record.modules={snapshotId:'snapshot',sections:[{kind:'report',title:'合成',columns:['值'],rows:[{cells:['未提供'],evidenceIds:[]}],notices:[],runId:'test',hashes:{'result.json':'a'.repeat(64)}}]};mutate(f.record.modules);assert.throws(()=>adaptDisplayBundle(f))
+  }
+})
+test('real extended records survive adapter without changing any result',{skip:!fs.existsSync(realPath)},()=>{
+  const f=JSON.parse(fs.readFileSync(realPath,'utf8'));assert.deepEqual(adaptDisplayBundle(f).modules,f.record.modules)
+})

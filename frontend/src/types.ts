@@ -1,4 +1,14 @@
-export type ViewId = 'cases' | 'overview' | 'financials' | 'investigation' | 'evidence' | 'review'
+export type ViewId = 'cases' | 'overview' | 'financials' | 'investigation' | 'evidence' | 'review' | 'report' | 'pdf'
+
+export interface OfflineSection {
+  kind: 'report' | 'pdf' | 'profit' | 'cash' | 'verification'
+  title: string
+  columns: string[]
+  rows: { cells: string[]; evidenceIds: string[] }[]
+  notices: string[]
+  runId: string
+  hashes: Record<string, string>
+}
 
 export type StatusTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'purple'
 
@@ -76,6 +86,7 @@ export interface ActionStep {
 }
 
 export interface CaseRecord {
+  modules?: { snapshotId: string; sections: OfflineSection[] }
   id: string
   run: RunContext
   question: string

@@ -1,3 +1,4 @@
+import { OfflineResults } from './OfflineResults'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { adaptLocalFiles, loadDisplayBundle } from '@/data/adapter'
 import { exampleCases } from '@/data/example'
@@ -98,8 +99,10 @@ function App() {
       <WorkbenchNav view={view} traceOpen={traceOpen} onView={(next) => { setView(next); setTraceOpen(false) }} onTrace={() => setTraceOpen((open) => !open)}/>
       {traceOpen
         ? <InvestigationPage key={record.id} record={record} embedded onClose={() => setTraceOpen(false)} onLink={(id) => id.startsWith('EXP') ? goExplanation(id) : record.evidence.some((e) => e.id === id) ? goEvidence(id) : goMetric(id)}/>
+        : view === 'report' || view === 'pdf'
+          ? <div className="page"><OfflineResults record={record} kind={view} onEvidence={goEvidence}/></div>
         : view === 'financials'
-          ? <FinancialsPage key={record.id + selectedMetricId} record={record} selectedId={selectedMetricId} onSelect={(id) => { setSelectedMetricId(id); setPanelOpen(true) }}/>
+          ? <FinancialsPage onEvidence={goEvidence} key={record.id + selectedMetricId} record={record} selectedId={selectedMetricId} onSelect={(id) => { setSelectedMetricId(id); setPanelOpen(true) }}/>
           : view === 'evidence'
             ? <EvidencePage key={record.id} record={record} selectedEvidenceId={selectedEvidenceId} selectedExplanationId={selectedExplanationId} onEvidence={setSelectedEvidenceId} onExplanation={setSelectedExplanationId} onMetric={goMetric}/>
             : <OverviewPage record={record} onMetric={goMetric} onInvestigation={() => setTraceOpen(true)} onExplanation={goExplanation} importNotices={record.notices ?? []}/>
@@ -158,6 +161,8 @@ function PageHead({ eyebrow, title, description, actions }: { eyebrow: string; t
 function WorkbenchNav({ view, traceOpen, onView, onTrace }: { view: ViewId; traceOpen: boolean; onView: (view: ViewId) => void; onTrace: () => void }) {
   return <div className="workbench-nav">
     <div><span>调查工作台</span>
+      <button className={view === 'report' && !traceOpen ? 'active' : ''} onClick={() => onView('report')}>研报纠错</button>
+      <button className={view === 'pdf' && !traceOpen ? 'active' : ''} onClick={() => onView('pdf')}>PDF 提取</button>
       <button className={view === 'overview' && !traceOpen ? 'active' : ''} onClick={() => onView('overview')}>概览</button>
       <button className={view === 'financials' && !traceOpen ? 'active' : ''} onClick={() => onView('financials')}>财务拆解</button>
       <button className={view === 'evidence' && !traceOpen ? 'active' : ''} onClick={() => onView('evidence')}>原因与证据</button>
@@ -210,7 +215,7 @@ function OverviewPage({ record, onMetric, onInvestigation, onExplanation, import
   </div>
 }
 
-function FinancialsPage({ record, selectedId, onSelect }: { record: CaseRecord; selectedId: string; onSelect: (id: string) => void }) {
+function FinancialsPage({ record, selectedId, onSelect, onEvidence }: { record: CaseRecord; selectedId: string; onSelect: (id: string) => void; onEvidence: (id: string) => void }) {
   const [tab, setTab] = useState<'profit' | 'cash'>(record.cashMetrics.some((m) => m.id === selectedId) ? 'cash' : 'profit')
   const [expanded, setExpanded] = useState<string[]>(['total_cost', 'cash_in', 'cash_out'])
   const source = tab === 'profit' ? record.metrics : record.cashMetrics
@@ -218,8 +223,8 @@ function FinancialsPage({ record, selectedId, onSelect }: { record: CaseRecord; 
   return <div className="page">
     <PageHead eyebrow="财务追踪" title="从结果反向追溯会计形成路径" description="项目变化与对上层目标的会计影响分列展示；父项与子项不重复加总。"/>
     <div className="tabs"><button className={tab === 'profit' ? 'active' : ''} onClick={() => setTab('profit')}>利润链</button><button className={tab === 'cash' ? 'active' : ''} onClick={() => setTab('cash')}>经营现金流</button></div>
-    <div className="trace-summary">
-      <div><span>{tab === 'profit' ? '追溯目标' : '研究入口'}</span><strong>{tab === 'profit' ? `归母净利润变化 ${record.metrics.find((m) => m.id === 'parent_profit')?.delta ?? '未提供'}` : '经营现金流披露金额'}</strong></div><Icon name="arrow"/><div><span>当前边界</span><strong>{record.run.isExample ? '交互示例' : '会计桥接展示未接入；不推断闭合'}</strong></div><Badge tone="warning">不可据此生成经营结论</Badge>
+    <OfflineResults record={record} kind={tab} onEvidence={onEvidence}/><div className="trace-summary">
+      <div><span>{tab === 'profit' ? '追溯目标' : '研究入口'}</span><strong>{tab === 'profit' ? `归母净利润变化 ${record.metrics.find((m) => m.id === 'parent_profit')?.delta ?? '未提供'}` : '经营现金流披露金额'}</strong></div><Icon name="arrow"/><div><span>当前边界</span><strong>{record.run.isExample ? '交互示例' : '桥接闭合状态见各目标；不推断经营因果'}</strong></div><Badge tone="warning">不可据此生成经营结论</Badge>
     </div>
     <div className="table-shell">
       <table><thead><tr><th>财务项目 / 关系</th><th>基期</th><th>本期</th><th>项目变化</th><th>对目标影响</th><th>数据来源</th><th>核验状态</th><th/></tr></thead>
@@ -300,7 +305,7 @@ function ReviewPage({ record, importedFiles }: { record: CaseRecord; importedFil
       <section className="panel-card delivery"><div className="panel-card-title"><div><span>交付分组</span><h2>当前可交付内容</h2></div></div>
         {[['可确认的财务事实','2','success'],['可供人工复核的解释','2','info'],['待验证假设','1','warning'],['未解决冲突','1','danger'],['待确认问题','4','warning']].map(([label,count,tone]) => <div className="delivery-row" key={label}><span>{label}</span><Badge tone={tone as StatusTone}>{count} 项</Badge><Icon name="chevron" size={15}/></div>)}
       </section>
-    </div> : <div className="review-grid"><section className="panel-card"><h2>资料冲突详情未接入</h2><p>没有导入冲突明细，不推断不存在冲突。</p><h3>Agent 失败原因</h3>{record.agentSummary?.errors.map((error) => <p key={error}>{error}</p>)}</section><section className="panel-card"><h2>已加载的后端结果</h2><p>{record.metrics.length + record.cashMetrics.length} 项财务记录 · {record.evidence.length} 条来源证据</p><p>{record.explanations.length} 条合规最终解释 · 人工业务复核未确认</p><p>来源核验通过不等于 Agent 分析通过。</p></section></div>}
+    </div> : <div className="review-grid"><section className="panel-card"><OfflineResults record={record} kind="verification"/><h3>Agent 失败原因</h3>{record.agentSummary?.errors.map((error) => <p key={error}>{error}</p>)}</section><section className="panel-card"><h2>已加载的后端结果</h2><p>{record.metrics.length + record.cashMetrics.length} 项财务记录 · {record.evidence.length} 条来源证据</p><p>{record.explanations.length} 条合规最终解释 · 人工业务复核未确认</p><p>来源核验通过不等于 Agent 分析通过。</p></section></div>}
     <section className="files-section"><div className="section-head"><div><span>运行记录和文件目录</span><h2>文件交付边界</h2></div></div>
       {downloads.length ? <div className="file-list">{downloads.map(({ file, url }) => <a key={file.name} href={url} download={file.name}><Icon name="file"/><div><strong>{file.name}</strong><span>{Math.ceil(file.size / 1024)} KB · 浏览器本地文件</span></div><Icon name="download"/></a>)}</div> : <div className="file-list disabled"><div><Icon name="file"/><div><strong>未提供原始附件与完整日志下载</strong><span>当前只读取白名单展示包；私有资料保留在 Python 工作区。</span></div><Badge tone="neutral">未导入</Badge></div></div>}
       <div className="future-actions"><button disabled><Icon name="lock"/> 导出 PDF / Word · 待接入</button><button disabled><Icon name="lock"/> 提交复核意见 · 待接入</button><button disabled><Icon name="lock"/> 签字审批 · 待接入</button></div>

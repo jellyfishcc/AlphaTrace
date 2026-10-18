@@ -122,9 +122,9 @@ def investigation(folder, payload, snapshot):
     return result, steps, summary, events[0].get('time', MISSING)
 
 
-def build(snapshot, agent_run):
+def build(snapshot, agent_run, *, report_check_run=None, pdf_extract_run=None, financial_details=False):
     snapshot, agent_run = Path(snapshot), Path(agent_run)
-    payload,_ = load_agent_payload(snapshot)
+    payload,audit = load_agent_payload(snapshot)
     metrics,cash = financial_rows(payload,read(snapshot/'metrics.json'),read(snapshot/'cash_metrics.json'))
     result,steps,summary,run_at = investigation(agent_run,payload,snapshot)
     evidence = []
@@ -154,6 +154,19 @@ def build(snapshot, agent_run):
     bundle=dict(schema=SCHEMA,record=record,provenance=dict(snapshotId=snapshot.name,agentRunId=agent_run.name,
         financialSha256=sha(snapshot/'metrics.json'),cashSha256=sha(snapshot/'cash_metrics.json'),
         eventsSha256=sha(agent_run/'investigation/events.jsonl'),resultSha256=sha(agent_run/'investigation/result.json')))
+    if report_check_run or pdf_extract_run or financial_details:
+        from .display_modules import report_section, pdf_section, financial_sections
+        sections = []
+        if report_check_run: sections.append(report_section(report_check_run,snapshot,payload,audit))
+        if pdf_extract_run: sections.append(pdf_section(pdf_extract_run,snapshot,payload))
+        if financial_details: sections.extend(financial_sections(snapshot,payload))
+        available = {e['id'] for e in evidence}
+        for section in sections:
+            identifier(section['runId'])
+            for row in section['rows']:
+                if not set(row['evidenceIds']) <= available: raise ValueError('module_evidence_missing')
+        record['modules'] = dict(snapshotId=snapshot.name, sections=sections)
+        record['notices'][-1] = '新增区域为后端离线结果回放；未导入的能力保持未提供。'
     public_only(bundle)
     return bundle
 
@@ -163,8 +176,11 @@ def main():
     parser.add_argument('--stage2-run',required=True)
     parser.add_argument('--agent-run',required=True)
     parser.add_argument('--output',required=True,help='new display JSON; existing files never overwritten')
+    parser.add_argument('--report-check-run')
+    parser.add_argument('--pdf-extract-run')
+    parser.add_argument('--financial-details', action='store_true')
     args=parser.parse_args()
-    bundle=build(args.stage2_run,args.agent_run)
+    bundle=build(args.stage2_run,args.agent_run,report_check_run=args.report_check_run,pdf_extract_run=args.pdf_extract_run,financial_details=args.financial_details)
     out=Path(args.output)
     out.parent.mkdir(parents=True,exist_ok=True)
     with out.open('x',encoding='utf-8') as stream:

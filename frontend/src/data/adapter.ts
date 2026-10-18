@@ -34,7 +34,7 @@ export function adaptDisplayBundle(value: unknown): CaseRecord {
   onlyKeys(bundle, ['schema','record','provenance'])
   assert(bundle.schema === 'alphatrace-display-v1')
   const record = object(bundle.record)
-  onlyKeys(record, ['id','run','question','pendingCount','metrics','cashMetrics','evidence','explanations','steps','agentSummary','notices'])
+  onlyKeys(record, ['id','run','question','pendingCount','metrics','cashMetrics','evidence','explanations','steps','agentSummary','notices','modules'])
   strings(record, ['id','question'])
   assert(identifier.test(String(record.id)))
   const run = object(record.run)
@@ -85,6 +85,33 @@ export function adaptDisplayBundle(value: unknown): CaseRecord {
   onlyKeys(provenance,['snapshotId','agentRunId','financialSha256','cashSha256','eventsSha256','resultSha256'])
   assert(provenance.snapshotId === run.materialVersion && provenance.agentRunId === run.id)
   for (const key of ['financialSha256','cashSha256','eventsSha256','resultSha256']) assert(/^[a-f0-9]{64}$/.test(String(provenance[key])))
+  if (record.modules !== undefined) {
+    const modules = object(record.modules)
+    onlyKeys(modules, ['snapshotId','sections'])
+    assert(modules.snapshotId === run.materialVersion)
+    for (const value of array(modules.sections)) {
+      const section = object(value)
+      onlyKeys(section, ['kind','title','columns','rows','notices','runId','hashes'])
+      strings(section,['kind','title','runId'])
+      assert(['report','pdf','profit','cash','verification'].includes(String(section.kind)))
+      assert(identifier.test(String(section.runId)))
+      if (['profit','cash','verification'].includes(String(section.kind))) assert(section.runId === modules.snapshotId)
+      const columns = stringArray(section.columns)
+      assert(columns.length > 0)
+      stringArray(section.notices)
+      const hashes = object(section.hashes)
+      assert(Object.keys(hashes).length > 0)
+      Object.entries(hashes).forEach(([name,hash]) => {
+        assert(/^[a-z_]+\.(json|csv)$/.test(name) && /^[a-f0-9]{64}$/.test(String(hash)))
+      })
+      for (const value of array(section.rows)) {
+        const row = object(value)
+        onlyKeys(row,['cells','evidenceIds'])
+        assert(stringArray(row.cells).length === columns.length)
+        stringArray(row.evidenceIds).forEach((id) => assert(evidenceIds.has(id)))
+      }
+    }
+  }
   const output = structuredClone(record) as unknown as CaseRecord
   output.run.statusLabel = '真实调查失败 · ' + stringArray(summary.errors).join(', ')
   output.run.label = '格力真实调查 · 验证失败'

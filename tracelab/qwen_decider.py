@@ -46,9 +46,12 @@ class LiveBailianTransport:
     """Explicit opt-in only. Reuses existing client; not used by offline CLI."""
     simulation=False
 
-    def __init__(self, *, authorized=False, expected_endpoint=None):
+    def __init__(self, *, authorized=False, expected_endpoint=None, free_tier_workspace_confirmed=False):
         if authorized is not True: raise ValueError('real_request_not_authorized')
         self.expected_endpoint=expected_endpoint
+        from .cost_budget import CostLedger
+        self.free_tier_workspace_confirmed=free_tier_workspace_confirmed
+        self.cost_ledger=CostLedger(token_mode='usage_target' if free_tier_workspace_confirmed else 'strict_bound')
 
     def send(self,body,timeout,diagnostics):
         from .bailian import configuration
@@ -58,8 +61,18 @@ class LiveBailianTransport:
         endpoint=config.endpoint
         if self.expected_endpoint is not None and endpoint!=self.expected_endpoint:
             raise DecisionFailure('endpoint_changed_since_authorization')
-        diagnostics['request_attempted']=True
-        return call_api(body,config.key,endpoint=endpoint,timeout=timeout,diagnostics=diagnostics)
+        from .cost_budget import check_live_price, guarded_send, MODEL_INPUT_CEILING
+        try:
+            check_live_price(body,endpoint)
+            if self.free_tier_workspace_confirmed:
+                from .cost_budget import check_free_tier_confirmation
+                check_free_tier_confirmation(self.free_tier_workspace_confirmed)
+            def send():
+                diagnostics['request_attempted']=True
+                return call_api(body,config.key,endpoint=endpoint,timeout=timeout,diagnostics=diagnostics)
+            return guarded_send(self.cost_ledger,body,send,MODEL_INPUT_CEILING)
+        except ValueError as exc:
+            raise DecisionFailure(str(exc)) from None
 
 
 class ReplayTransport:
@@ -104,6 +117,17 @@ class QwenDecider:
         if set(self.evidence)!=set(scope.evidence_ids) or any(not verified_evidence(e,payload) for e in self.evidence.values()):
             raise ValueError('export_source_not_verified')
         # No original internal documents, source-contract registry, or arbitrary state fields exported.
+        self.coverage_payload=copy.deepcopy(payload)
+        self.coverage_payload['evidence']=list(self.evidence.values())
+        self.coverage_payload['facts']=[f for f in payload['facts'] if f['fact_id'] in scope.fact_ids]
+        # Export explicit verified direct relations only; never infer aliases or closure.
+        self.accounting_relations=[]
+        for relation in payload.get('analysis_contract',{}).get('accounting_relations',[]):
+            components=relation.get('components',[])
+            if (relation.get('verified') is True and relation.get('target') in self.facts
+                    and components and all(c.get('component') in self.facts for c in components)):
+                self.accounting_relations.append(dict(target=relation['target'],verified=True,
+                    components=[{k:c[k] for k in ('component','sign','effect')} for c in components]))
         self.scope=scope;self.transport=transport;self.budget=budget;self.model=model
         self.simulation=transport.simulation
         self.prompt=PROMPT.read_text(encoding='utf-8')
@@ -122,6 +146,8 @@ class QwenDecider:
             actual_total_tokens=None if self.simulation or self.usage_unknown else self.actual_input+self.actual_output,
             usage_origin='synthetic_transport' if self.simulation else 'service_reported',
             model_budget=dict(vars(self.budget)),
+            token_policy='usage_target_not_pre_request_hard_cap',
+            cost_control=self.transport.cost_ledger.snapshot() if hasattr(self.transport,'cost_ledger') else None,
             cost=None,cost_status='not_applicable_simulation' if self.simulation else 'unknown',retries=0)
 
     def context(self,state):
@@ -154,11 +180,14 @@ class QwenDecider:
                 omitted.append('other_evidence_details')
         context=dict(goal=state['goal'][:500],questions=state.get('questions',[])[:4],
             actions=FIELDS,analysis_schema=SCHEMA_V2,
+            accounting_relations=copy.deepcopy(self.accounting_relations),
             fact_catalog=[{'fact_id':k,'name':v['name'],'financial_level':v['financial_level']} for k,v in sorted(self.facts.items())],
             evidence_catalog=[{k:e[k] for k in ('evidence_id','source_file','printed_page','comparison_basis','related_facts')} for _,e in sorted(self.evidence.items())],
             queried_facts=facts,queried_evidence=evidence,history=history[-6:],
             remaining={**state.get('remaining',{}),'model_requests':self.budget.max_requests-self.attempts,
-                       'conservative_token_budget':self.budget.total_tokens-self.charged},
+                       'max_output_tokens':self.budget.max_output_tokens,
+                       'remaining_token_target':max(0,self.budget.total_tokens-self.actual_input-self.actual_output),
+                       'input_token_bound_known':False},
             omissions=omitted,note='目录只含允许外发子集，省略不表示不存在；文字截断已标记，必要原文不足则停止或查询其他相关证据。')
         context['progress']=self.progress(state)
         if self.initial_fact_ids:
@@ -167,6 +196,14 @@ class QwenDecider:
                 'retrieved_source_quotes':[{'evidence_id':eid,'quote':self.evidence[eid]['text']}
                     for eid in self.facts[fid]['evidence_ids'] if eid in selected_evidence and eid in self.evidence]}
                 for fid in self.initial_fact_ids]
+        from .evidence_progress import core_metrics, evidence_progress
+        coverage=evidence_progress(self.coverage_payload,state.get('history',[]),
+            core_metrics(state['goal'],state.get('core_metric_ids',[])))
+        coverage['visible_evidence_ids']=sorted({e['evidence_id'] for e in evidence}|
+            {q['evidence_id'] for f in context.get('initial_facts',[]) for q in f['retrieved_source_quotes']})
+        context['evidence_progress']=coverage
+        if coverage['missing_core_metric_ids']:
+            context['progress']['next_step']='stop_only' if context['progress']['terminal_action_required'] else 'search_or_get_missing_core_evidence_or_stop'
         if len(state['goal'])>500:context['omissions'].append('goal_tail')
         if len(state.get('questions',[]))>4:context['omissions'].append('later_questions')
         return context
@@ -244,12 +281,15 @@ class QwenDecider:
         if self.last_status in ('request_failed','invalid_action'):raise DecisionFailure('failed_run_no_retry')
         if self.attempts>=self.budget.max_requests: raise DecisionFailure('request_budget_exhausted')
         if self.usage_unknown: raise DecisionFailure('unknown_usage_stop')
+        if self.actual_input+self.actual_output>=self.budget.total_tokens:
+            raise DecisionFailure('token_budget_exhausted')
         context=self.context(state)
         body=chat_body(self.model,self.prompt,json.dumps(context,ensure_ascii=False),self.budget.max_output_tokens,SCHEMA)
         size=sum(len(m['content'].encode()) for m in body['messages'])
         reserve=size+256+self.budget.max_output_tokens # Conservative byte-based estimate, not a tokenizer guarantee.
         if size>self.budget.max_input_bytes:raise DecisionFailure('input_budget_exhausted')
-        if self.charged+reserve>self.budget.total_tokens:raise DecisionFailure('token_budget_exhausted')
+        if self.actual_input+self.actual_output+self.budget.max_output_tokens>self.budget.total_tokens:
+            raise DecisionFailure('token_budget_exhausted')
         self.attempts+=1;self.charged+=reserve
         record=dict(index=self.attempts,time=datetime.now(timezone.utc).isoformat(),simulation=self.simulation,
             prompt_version='agent_decision_v1',prompt_sha256=digest(self.prompt),request=body,
@@ -279,7 +319,9 @@ class QwenDecider:
             self.last_status='valid_action'
             return value
         except Exception as exc:
-            code=str(exc) if isinstance(exc,DecisionFailure) else type(exc).__name__
+            from .bailian import is_free_tier_exhausted
+            code=('free_tier_exhausted' if is_free_tier_exhausted(exc) else
+                  str(exc) if isinstance(exc,DecisionFailure) else type(exc).__name__)
             self.last_status='invalid_action' if isinstance(exc,DecisionFailure) and code not in ('missing_credentials','model_refusal','incomplete_response','actual_token_budget_exceeded') else 'request_failed'
             record.update(status='failed',error=code)
             if record['usage'] is None:self.usage_unknown=True
@@ -287,6 +329,7 @@ class QwenDecider:
         finally:
             if diagnostics.get('request_attempted') and not self.simulation:self.real_attempts+=1
             record['transport']={k:diagnostics.get(k) for k in ('request_attempted','phase','http_status','request_id')}
+            if hasattr(self.transport,'cost_ledger'):record['cost_control']=self.transport.cost_ledger.snapshot()
             record['latency_seconds']=round(time.monotonic()-started,3)
             self.records.append(record)
             if path:write(path,record)

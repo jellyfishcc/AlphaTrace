@@ -15,6 +15,7 @@ from urllib import request, error
 from .stage3_input import prepare, read, sha
 from .bailian import configuration, chat_body, as_response
 from .analysis_contract import check_contract
+from .source_contract import quote_matches
 
 ROOT = Path(__file__).resolve().parents[1]
 ENDPOINT = 'https://api.openai.com/v1/responses'
@@ -57,6 +58,22 @@ def schema_errors(value, schema, path='response'):
     return [] if isinstance(value,str) and ('enum' not in schema or value in schema['enum']) else [path+': invalid string']
 
 
+def free_text_number_errors(response, payload):
+    """Only explicit authorized year tokens are exempt; amounts stay structured."""
+    periods={str(p) for p in payload.get('periods',[]) if re.fullmatch(r'[0-9]{4}',str(p))}
+    fields=[(f'questions[{i}]',q) for i,q in enumerate(response['questions'])]
+    fields += [(f'claims[{i}].{k}',c[k]) for i,c in enumerate(response['claims'])
+               for k in ('statement','support_limit')]
+    errors=[]
+    for path,text in fields:
+        # Do not exempt bare years, decimals, signed numbers, ranges or year-like money.
+        scanned=re.sub(r'(?<![\w.,+\-])([0-9]{4})年(?![\d元亿万%％])',
+            lambda m:'期间' if m[1] in periods else m[0],text,flags=re.ASCII)
+        if re.search(r'\d|[零一二三四五六七八九十百千万亿两]+(?:元|亿元|%|％|百分之)|百分之',scanned):
+            errors.append(path+'：自由文本含未结构化数字，金额必须放入amounts供精确核验；比例不得在正文声明')
+    return errors
+
+
 def validate(response, payload):
     modern=payload.get('analysis_contract',{}).get('version')=='v2'
     errors=schema_errors(response,SCHEMA_V2 if modern else SCHEMA)
@@ -76,7 +93,7 @@ def validate(response, payload):
             e=evidence.get(citation['evidence_id'])
             if e is None: errors.append(label+'引用不存在的证据'); continue
             cited.append(e)
-            if not citation['quote'].strip() or citation['quote'] not in e['text']: errors.append(label+'引文与原文不一致')
+            if not quote_matches(citation['quote'],e,payload): errors.append(label+'引文与原文不一致')
         for k in c['metric_ids']:
             if k in facts and not any(k in e['related_facts'] for e in cited): errors.append(label+'财务项目缺少相关证据')
         for a in c['amounts']:
@@ -88,6 +105,17 @@ def validate(response, payload):
                 equal=False
             if not equal: errors.append(label+'金额、期间或单位与输入不一致')
             if a['fact_id'] not in c['metric_ids']: errors.append(label+'金额未关联该条财务项目')
+            from .source_contract import digest, verified_evidence
+            fact=facts.get(a['fact_id'],{})
+            sources=set(fact.get('evidence_ids',[]))
+            fact_verified=(payload.get('source_contract',{}).get('facts',{}).get(a['fact_id'])==digest(fact))
+            qualified=any(e['evidence_id'] in sources and verified_evidence(e,payload)
+                and a['fact_id'] in e['related_facts']
+                and (not modern or c['comparison_basis'] in payload['source_contract']['evidence'][e['evidence_id']].get('allowed_bases',[]))
+                and any(q['evidence_id']==e['evidence_id'] and quote_matches(q['quote'],e,payload) for q in c['citations'])
+                for e in cited)
+            if not fact_verified or not qualified:
+                errors.append(label+'金额缺少同条结论中经核验的事实原始来源')
         if c['kind']=='hypothesis' and ('待验证' not in c['statement'] or re.search('确定|必然|唯一原因|证明了|就是原因',c['statement'])):
             errors.append(label+'可能将假设写为确定原因')
         if c['kind']=='accounting_fact' and re.search('由于|导致|造成|因为|主要原因',c['statement']):
@@ -97,9 +125,7 @@ def validate(response, payload):
             errors.extend(label+e for e in disclosure_errors(c,cited,payload))
             if '年报' not in c['statement']: review.append(label+'应明确解释来自年报披露')
         review.append(label+'：人工检查引文是否实际支持结论、有无扩大因果范围及混淆本期与同比')
-    free=[q for q in response['questions']]+[c[k] for c in response['claims'] for k in ('statement','support_limit')]
-    if any(re.search(r'\d|[零一二三四五六七八九十百千万亿两]+(?:元|亿元|%|％|百分之)',t) for t in free):
-        errors.append('自由文本含未结构化数字，金额必须放入amounts供精确核验')
+    errors.extend(free_text_number_errors(response,payload))
     if modern:
         extra,manual=check_contract(response,payload)
         errors.extend(extra)

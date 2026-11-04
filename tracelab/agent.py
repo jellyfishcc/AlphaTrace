@@ -149,7 +149,9 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
     selected=matching or tasks
     questions=[q for t in selected for q in t.get('questions',[])]
     goal='；'.join(s['description'] for s in signals) or '核查已计算的利润变化及其披露依据'
-    state=dict(goal=goal,questions=questions,facts=copy.deepcopy(payload['facts']),
+    from .evidence_progress import core_metrics, evidence_progress, explain_precheck
+    required=core_metrics(goal,plan.get('core_metric_ids',[]))
+    state=dict(core_metric_ids=required,goal=goal,questions=questions,facts=copy.deepcopy(payload['facts']),
                analysis_contract=copy.deepcopy(payload.get('analysis_contract',{})),history=[])
     runtime=lambda: (decider.runtime_status() if hasattr(decider,'runtime_status') else
                      dict(simulation=True,llm_called=False,decision_mode='preset_mock',model_requests=0))
@@ -167,6 +169,7 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
         try:
             bounded(state,500000)
             state['remaining']={'rounds':max_rounds-index,'tool_calls':max_tools-result['tool_calls']}
+            state['evidence_progress']=evidence_progress(payload,state['history'],required)
             decision=decider.decide(copy.deepcopy(state))
             if hasattr(decider,'runtime_status'): log({'event':'model_decision','round':index+1,**runtime()})
             bounded(decision,30000)
@@ -184,6 +187,16 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
                 if action=='explain' and 'analysis' not in args: raise ValueError('missing_analysis')
                 if action=='stop' and (not isinstance(args.get('reason'),str) or not args['reason'].strip()):
                     raise ValueError('missing_stop_reason')
+                if action=='explain' and isinstance(args.get('analysis'),dict) and (
+                        payload.get('source_contract') or plan.get('core_metric_ids')):
+                    precheck=explain_precheck(payload,state['history'],required,args['analysis'])
+                    write(out/'evidence_precheck.json',precheck)
+                    if not precheck['ready']:
+                        result.update(status='validation_failed',stop_reason='explain_evidence_precheck_failed',
+                                      evidence_gap=precheck)
+                        result['errors'].append('explain_evidence_precheck_failed')
+                        log({'event':'explain_blocked','evidence_gap':precheck})
+                        break
                 if 'analysis' in args:
                     # Only retrieved evidence may support a conclusion, not unseen inventory.
                     check_payload=copy.deepcopy(payload)
@@ -234,7 +247,8 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
     result['retrieval_audit']=[dict(action=h['action'],arguments=h['arguments'],
         evidence_ids=[e['evidence_id'] for e in h['result']] if h['action']=='search' else [h['result']['evidence_id']])
         for h in state['history'] if h['action'] in ('search','get')]
-    result['evidence_gap']=result['stop_reason'] if result['status']=='insufficient_evidence' else None
+    result['evidence_progress']=evidence_progress(payload,state['history'],required)
+    result['evidence_gap']=result.get('evidence_gap') or (result['stop_reason'] if result['status']=='insufficient_evidence' else None)
     write(out/'result.json',result)
     write(out/'manifest.json',dict(run_id=out.name,**runtime(),status=result['status'],
           decision_source=type(decider).__name__,code_sha256=sha(__file__)))

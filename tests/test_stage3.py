@@ -13,6 +13,14 @@ class Stage3Tests(unittest.TestCase):
     def setUp(self):
         self.payload={'facts':[{'fact_id':'net','amounts':{'change':{'元':'-10.00'}}}],
                       'evidence':[{'evidence_id':'F_net','text':'净利润下降','related_facts':['net']}]}
+        # Synthetic source receipts for validator tests; not real model/source evidence.
+        from tracelab.source_contract import digest
+        self.payload['facts'][0]['evidence_ids']=['F_net']
+        self.payload['evidence'][0]['source_type']='公开年报披露'
+        self.payload['source_contract']={'facts':{'net':digest(self.payload['facts'][0])},
+            'evidence':{'F_net':{'source_kind':'annual_report','file_sha256':'0'*64,
+                'evidence_sha256':digest(self.payload['evidence'][0]),'allowed_bases':['yoy']}}}
+
         self.answer={'claims':[{'kind':'accounting_fact','statement':'净利润下降','metric_ids':['net'],
                                 'citations':[{'evidence_id':'F_net','quote':'净利润下降'}],
                                 'amounts':[{'fact_id':'net','field':'change','unit':'元','value':'-10.00'}],

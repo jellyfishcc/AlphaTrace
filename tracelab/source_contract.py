@@ -73,3 +73,25 @@ def disclosure_errors(claim, cited, payload):
         if basis not in allowed: errors.append('披露比较口径与引文不一致；请分开本期差异与同比解释')
         if not set(claim['metric_ids']) & set(e['related_facts']): errors.append('引文未关联本条财务项目')
     return errors
+
+
+# Reviewed PDF layout exceptions: (original PDF hash, complete evidence digest)
+# -> removable LF offsets. E07_28, annual report PDF page 29: 有关\n的现金.
+# Unknown excerpts/pages/whitespace retain strict substring comparison.
+_REVIEWED_SOFT_BREAKS = {
+    ('eda18a6d7382410f3096ffa764b99c8740287c665b20ee2377abb99c34414054',
+     '23740042da6ac43c77f154c4c582baf8a84f0ad8c353bf350995ecbc60e3b8b3'): (58,),
+}
+
+
+def quote_matches(quote, evidence, payload):
+    """Match without mutating either audit text; only reviewed PDF LFs may vanish."""
+    if not isinstance(quote,str) or not quote.strip(): return False
+    text=evidence['text']
+    if quote in text: return True
+    if not verified_evidence(evidence,payload): return False
+    receipt=payload['source_contract']['evidence'][evidence['evidence_id']]
+    offsets=_REVIEWED_SOFT_BREAKS.get((receipt['file_sha256'],digest(evidence)),())
+    if not offsets or any(text[i]!='\n' for i in offsets): return False
+    matched_text=''.join(c for i,c in enumerate(text) if i not in offsets)
+    return quote in matched_text

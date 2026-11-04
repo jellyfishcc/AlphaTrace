@@ -119,3 +119,30 @@ class ProgressTests(unittest.TestCase):
                         [dict(action='explain',arguments={'analysis':self.analysis})]):
             r,_=self.run_path(actions)
             self.assertEqual(r['status'],'validation_failed');self.assertTrue(r['errors'])
+
+    def test_output_budget_visible_without_schema_change(self):
+        from tracelab.stage3 import SCHEMA_V2
+        for limit in (600, 1200):
+            d=self.decider(budget=Budget(max_output_tokens=limit))
+            context=d.context(self.state)
+            self.assertEqual(context['remaining']['max_output_tokens'],limit)
+            self.assertEqual(context['analysis_schema'],SCHEMA_V2)
+
+    def test_compact_explain_retains_full_validation(self):
+        answer=copy.deepcopy(self.analysis)
+        answer['claims'][0]['amounts']=[]
+        r,d=self.run_path([self.search,self.get,dict(action='explain',arguments={'analysis':answer})])
+        self.assertEqual(r['status'],'pending_human_review')
+        self.assertEqual(r['errors'],[])
+        self.assertTrue(r['manual_review'])
+        self.assertEqual(d.records[-1]['request']['max_tokens'],1200)
+
+    def test_length_response_is_never_repaired_or_retried(self):
+        d=self.decider()
+        d.transport=ReplayTransport([reply(content='{"action":"explain",',finish='length')])
+        with tempfile.TemporaryDirectory() as tmp:
+            r=investigate(self.payload,{'signals':[]},d,Path(tmp)/'run',5,4)
+            self.assertFalse((Path(tmp)/'run'/'analysis.json').exists())
+        self.assertEqual(r['errors'],['incomplete_response'])
+        self.assertEqual(r['status'],'validation_failed')
+        self.assertEqual(d.attempts,1)

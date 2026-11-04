@@ -80,3 +80,16 @@ def as_response(raw):
                 status='completed' if complete else 'incomplete',
                 incomplete_details=None if complete else {'reason':reason},
                 output=[{'type':'message','role':'assistant','content':content}])
+
+
+def is_free_tier_exhausted(exc):
+    """Read only a bounded error body; return a boolean, never retain server text."""
+    from urllib.error import HTTPError
+    if not isinstance(exc,HTTPError) or exc.code!=403:return False
+    try:
+        value=json.loads(exc.read(8192))
+        if not isinstance(value,dict):return False
+        error=value.get('error',value)
+        return isinstance(error,dict) and error.get('code')=='AllocationQuota.FreeTierOnly'
+    except Exception:
+        return False

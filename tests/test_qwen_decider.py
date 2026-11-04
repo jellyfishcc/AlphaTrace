@@ -150,8 +150,9 @@ class QwenTests(unittest.TestCase):
         with self.assertRaises(ValueError):LiveBailianTransport()
         diagnostics={}
         with patch('tracelab.bailian.configuration',return_value=Config('synthetic-test','https://example.test/compatible-mode/v1','qwen-plus',{})),patch('tracelab.stage3.call_api',return_value=(reply(self.stop),'fake-id')) as call:
-            LiveBailianTransport(authorized=True).send({'model':'qwen-plus'},90,diagnostics)
-        self.assertTrue(diagnostics['request_attempted']);call.assert_called_once()
+            with self.assertRaisesRegex(DecisionFailure,'cost_model_endpoint_mismatch'):
+                LiveBailianTransport(authorized=True).send({'model':'qwen-plus'},90,diagnostics)
+        self.assertFalse(diagnostics.get('request_attempted',False));call.assert_not_called()
 
     def test_real_flags_without_network_in_test_double(self):
         class SyntheticLiveFailure:

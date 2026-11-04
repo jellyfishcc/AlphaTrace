@@ -59,10 +59,10 @@ def prepare(source,output,config_check=configuration_presence):
                  citations=[dict(evidence_id='F_net_profit',quote=evidence['F_net_profit']['text'])],amounts=[],
                  support_limit='仅确认会计变化，尚未解释经营原因',accounting_links=[],comparison_basis='yoy'),
             dict(kind='hypothesis',statement='待验证：经营收付款变化是否足以解释现金流走势',metric_ids=['operating_cashflow'],
-                 citations=[dict(evidence_id='E18',quote=evidence['E18']['text'][:200])],amounts=[],
+                 citations=[dict(evidence_id='F_operating_cashflow',quote=evidence['F_operating_cashflow']['text'])],amounts=[],
                  support_limit='需要结合分项和披露复核，不推断盈利质量改善',accounting_links=[],comparison_basis='yoy')],
                  'questions':['是否存在尚未获得披露支持的经营影响？']}
-        actions=[dict(action='search',arguments={'metric_id':'net_profit'}),dict(action='get',arguments={'evidence_id':'E18'}),
+        actions=[dict(action='search',arguments={'metric_id':'net_profit'}),dict(action='get',arguments={'evidence_id':'F_operating_cashflow'}),
                  dict(action='explain',arguments={'analysis':analysis})]
         responses=[dict(model='qwen-plus',usage={'prompt_tokens':100,'completion_tokens':50},
                    choices=[dict(finish_reason='stop',message={'content':json.dumps(a,ensure_ascii=False)})]) for a in actions]
@@ -88,6 +88,12 @@ def prepare(source,output,config_check=configuration_presence):
             replay_status=result['status'],replay_requests=result['model_requests'],replay_usage='synthetic_only',
             first_request_bytes=sum(len(m['content'].encode()) for m in body['messages']),
             safety=['只允许明确白名单；内部文件不外发','本期受限资金不作为同比贡献','未知用量停止，异常零重试','经营因果待人工复核'])
+        report['cost_readiness']='pending_free_tier_workspace_confirmation'
+        report['cost_limit_cny']='30.00'
+        from .cost_budget import FREE_TIER
+        report['free_tier']=dict(FREE_TIER)
+        report['token_target_is_hard_cap']=False
+        report['note']='status仅表示来源与Replay预检；真实执行另受费用关卡阻断'
         write(out/'preflight.json',report)
         return out,report
 

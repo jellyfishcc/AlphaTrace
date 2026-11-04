@@ -18,6 +18,7 @@ class FocusedRegressionTests(unittest.TestCase):
             e['evidence_id']:{'source_kind':'annual_report','file_sha256':'0'*64,
                 'evidence_sha256':digest(e),'allowed_bases':[e['comparison_basis']]}
             for e in self.payload['evidence']}}
+        self.payload['source_contract']['facts']={f['fact_id']:digest(f) for f in self.payload['facts']}
 
     def corrected_variant(self):
         answer=copy.deepcopy(self.answer)

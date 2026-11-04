@@ -76,30 +76,39 @@ def main(argv=None):
     parser.add_argument('--scope',type=Path,required=True)
     parser.add_argument('--execute-real',action='store_true')
     parser.add_argument('--authorization-id')
+    parser.add_argument('--confirm-free-tier-workspace',action='store_true',
+                        help='人工确认当前Key属于免费额度用完即停的同一业务空间；不是API验证')
     parser.add_argument('--output',type=Path,default=Path('outputs/agent_live'))
     args=parser.parse_args(argv)
     payload,audit=prepare(args.stage2_run,args.preflight,args.scope)
+    from .cost_budget import check_free_tier_confirmation, FREE_TIER
+    if args.confirm_free_tier_workspace:check_free_tier_confirmation(True)
     if not args.execute_real:
-        print(json.dumps(dict(status='ready_not_called',llm_called=False,fact_ids=FACTS,evidence_ids=EVIDENCE),ensure_ascii=False))
+        print(json.dumps(dict(status='ready_pending_authorization' if args.confirm_free_tier_workspace else 'pending_free_tier_workspace_confirmation',llm_called=False,cost_limit_cny='30.00',fact_ids=FACTS,evidence_ids=EVIDENCE),ensure_ascii=False))
         return 0
     if not args.authorization_id:parser.error('--execute-real requires --authorization-id')
+    check_free_tier_confirmation(args.confirm_free_tier_workspace)
     run_id=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')+'-'+uuid.uuid4().hex[:10]
     out=args.output/run_id
     authorization=dict(id=args.authorization_id,time=datetime.now(timezone.utc).isoformat(),run_id=run_id,
         goal=GOAL,fact_ids=list(FACTS),evidence_ids=list(EVIDENCE),budget=vars(BUDGET),
         max_rounds=5,max_tools=4,retries=0,max_investigations=1,simulation=False,
+        cost_limit_cny='30.00',cost_policy='free_tier_primary_usage_target_auxiliary_cny_reserve',
+        free_tier={**FREE_TIER,'workspace_confirmed':args.confirm_free_tier_workspace},
         source_manifest_sha256=audit['source_manifest_sha256'])
     decider=QwenDecider(payload,ExportScope(frozenset(FACTS),frozenset(EVIDENCE),args.authorization_id),
-        LiveBailianTransport(authorized=True,expected_endpoint=audit['configuration']['endpoint']),
+        LiveBailianTransport(authorized=True,expected_endpoint=audit['configuration']['endpoint'],
+                             free_tier_workspace_confirmed=args.confirm_free_tier_workspace),
         budget=BUDGET,model='qwen-plus',initial_fact_ids=FACTS)
     claim_once(args.output,args.authorization_id,authorization)
     out.mkdir(parents=True,exist_ok=False)
     write(out/'authorization.json',authorization)
     write(out/'source_audit.json',audit)
     write(out/'code_hashes.json',{str(p):sha(p) for p in [Path(__file__),PROMPT,
-        Path('tracelab/agent.py'),Path('tracelab/qwen_decider.py'),Path('tracelab/stage3.py'),Path('tracelab/bailian.py')]})
+        Path('tracelab/agent.py'),Path('tracelab/qwen_decider.py'),Path('tracelab/stage3.py'),Path('tracelab/bailian.py'),Path('tracelab/cost_budget.py')]})
     print(json.dumps({'output':str(out.resolve()),'status':'starting_authorized_investigation'},ensure_ascii=False),flush=True)
-    plan={'signals':[{'id':'authorized_goal','description':GOAL}], 'investigation_tasks':[]}
+    plan={'signals':[{'id':'authorized_goal','description':GOAL}], 'investigation_tasks':[],
+          'core_metric_ids':['net_profit','operating_cashflow']}
     result=investigate(payload,plan,decider,out/'investigation',max_rounds=5,max_tools=4)
     print(json.dumps({'output':str(out.resolve()),**result},ensure_ascii=False))
     return 1 if result['status']=='validation_failed' else 0

@@ -145,8 +145,8 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
     facts_tool=LocalFacts(payload)
     tasks=plan.get('investigation_tasks',[])
     signals=plan.get('signals',[])
-    matching=[t for t in tasks if t.get('reason') in {s['id'] for s in signals}]
-    selected=matching or tasks
+    from .investigation import select_tasks
+    selected=select_tasks(plan)
     questions=[q for t in selected for q in t.get('questions',[])]
     goal='；'.join(s['description'] for s in signals) or '核查已计算的利润变化及其披露依据'
     from .evidence_progress import core_metrics, evidence_progress, explain_precheck
@@ -170,6 +170,12 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
             bounded(state,500000)
             state['remaining']={'rounds':max_rounds-index,'tool_calls':max_tools-result['tool_calls']}
             state['evidence_progress']=evidence_progress(payload,state['history'],required)
+            if plan.get('task_contract_version')=='v1':
+                from .evidence_progress import investigation_task_progress
+                state['investigation_task_progress']=investigation_task_progress(payload,selected,state['history'])
+                from .evidence_progress import task_decision
+                state['task_decision']=task_decision(state['investigation_task_progress'],
+                    state['evidence_progress']['eligible_evidence_ids'],state['remaining'])
             decision=decider.decide(copy.deepcopy(state))
             if hasattr(decider,'runtime_status'): log({'event':'model_decision','round':index+1,**runtime()})
             bounded(decision,30000)
@@ -184,12 +190,14 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
             if not isinstance(action,str) or action not in allowed or not set(args)<=allowed[action]:
                 raise ValueError('invalid_action_or_arguments')
             if action in ('explain','stop'):
+                result['submission_action']=action
                 if action=='explain' and 'analysis' not in args: raise ValueError('missing_analysis')
                 if action=='stop' and (not isinstance(args.get('reason'),str) or not args['reason'].strip()):
                     raise ValueError('missing_stop_reason')
                 if action=='explain' and isinstance(args.get('analysis'),dict) and (
                         payload.get('source_contract') or plan.get('core_metric_ids')):
-                    precheck=explain_precheck(payload,state['history'],required,args['analysis'])
+                    precheck=explain_precheck(payload,state['history'],required,args['analysis'],
+                        task_progress=state.get('investigation_task_progress'))
                     write(out/'evidence_precheck.json',precheck)
                     if not precheck['ready']:
                         result.update(status='validation_failed',stop_reason='explain_evidence_precheck_failed',
@@ -207,7 +215,7 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
                     result['manual_review'].extend(checks['manual_review'])
                 result['status']=('validation_failed' if result['errors'] else
                                   'pending_human_review' if action=='explain' else 'insufficient_evidence')
-                result['stop_reason']=args.get('reason','explanation_submitted')
+                result['stop_reason']=('explanation_validation_failed' if checks['errors'] else args.get('reason','explanation_submitted')) if 'analysis' in args else args['reason']
                 break
             if result['tool_calls']>=max_tools:
                 result['stop_reason']='tool_limit'; break
@@ -249,6 +257,21 @@ def investigate(payload, plan, decider, out, max_rounds=6, max_tools=4):
         for h in state['history'] if h['action'] in ('search','get')]
     result['evidence_progress']=evidence_progress(payload,state['history'],required)
     result['evidence_gap']=result.get('evidence_gap') or (result['stop_reason'] if result['status']=='insufficient_evidence' else None)
+    budget_codes={'input_budget_exhausted','evidence_budget_reserved','request_budget_exhausted','token_budget_exhausted','tool_budget_exhausted','terminal_decision_required'}
+    budget_stopped=result['stop_reason'] in ('round_limit','tool_limit') or bool(budget_codes.intersection(result['errors']))
+    result['termination_category']=('budget_exhausted' if budget_stopped else
+        'explain_precheck_rejected' if result['stop_reason']=='explain_evidence_precheck_failed' else
+        'validator_rejected' if result['stop_reason']=='explanation_validation_failed' else
+        'system_or_decision_error' if result['stop_reason']=='invalid_decision_or_tool_error' else
+        'human_review_required' if result['status']=='pending_human_review' else 'insufficient_evidence')
+    if plan.get('task_contract_version')=='v1':
+        from .evidence_progress import investigation_task_progress
+        result['investigation_task_progress']=investigation_task_progress(payload,selected,state['history'],
+            budget_exhausted=budget_stopped)
+        result['unresolved_task_ids']=result['investigation_task_progress']['unresolved_task_ids']
+        result['task_evidence_gaps']=[dict(task_id=r['task_id'],reason=r['reason'],questions=r['unresolved_questions'])
+            for r in result['investigation_task_progress']['tasks'] if r['status']!='answered']
+        write(out/'task_progress.json',result['investigation_task_progress'])
     write(out/'result.json',result)
     write(out/'manifest.json',dict(run_id=out.name,**runtime(),status=result['status'],
           decision_source=type(decider).__name__,code_sha256=sha(__file__)))

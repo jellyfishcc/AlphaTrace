@@ -124,6 +124,9 @@ def validate(response, payload):
             from .source_contract import disclosure_errors
             errors.extend(label+e for e in disclosure_errors(c,cited,payload))
             if '年报' not in c['statement']: review.append(label+'应明确解释来自年报披露')
+        from .semantic_boundary import check_semantic_boundary
+        semantic_errors,semantic_review=check_semantic_boundary(c,payload,label)
+        errors.extend(semantic_errors);review.extend(semantic_review)
         review.append(label+'：人工检查引文是否实际支持结论、有无扩大因果范围及混淆本期与同比')
     errors.extend(free_text_number_errors(response,payload))
     if modern:

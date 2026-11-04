@@ -107,8 +107,8 @@ def main(argv=None):
     write(out/'code_hashes.json',{str(p):sha(p) for p in [Path(__file__),PROMPT,
         Path('tracelab/agent.py'),Path('tracelab/qwen_decider.py'),Path('tracelab/stage3.py'),Path('tracelab/bailian.py'),Path('tracelab/cost_budget.py')]})
     print(json.dumps({'output':str(out.resolve()),'status':'starting_authorized_investigation'},ensure_ascii=False),flush=True)
-    plan={'signals':[{'id':'authorized_goal','description':GOAL}], 'investigation_tasks':[],
-          'core_metric_ids':['net_profit','operating_cashflow']}
+    from .investigation import prepare_scoped_investigation
+    plan=prepare_scoped_investigation(payload,GOAL)
     result=investigate(payload,plan,decider,out/'investigation',max_rounds=5,max_tools=4)
     print(json.dumps({'output':str(out.resolve()),**result},ensure_ascii=False))
     return 1 if result['status']=='validation_failed' else 0

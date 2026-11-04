@@ -197,6 +197,15 @@ class QwenDecider:
                     for eid in self.facts[fid]['evidence_ids'] if eid in selected_evidence and eid in self.evidence]}
                 for fid in self.initial_fact_ids]
         from .evidence_progress import core_metrics, evidence_progress
+        if 'task_decision' in state:
+            context['investigation_task_progress']=state['task_decision']
+            # Keep one copy of identical original text, with an explicit reference.
+            quotes={q['evidence_id']:q['quote'] for f in context.get('initial_facts',[]) for q in f['retrieved_source_quotes']}
+            for row in evidence:
+                if row['evidence_id'] in quotes and row['text']==quotes[row['evidence_id']]:
+                    row.pop('text')
+                    row['text_reference']='initial_facts.retrieved_source_quotes'
+            context['questions']=[] # Unresolved questions are in the task summary; answered tasks retain their IDs.
         coverage=evidence_progress(self.coverage_payload,state.get('history',[]),
             core_metrics(state['goal'],state.get('core_metric_ids',[])))
         coverage['visible_evidence_ids']=sorted({e['evidence_id'] for e in evidence}|
@@ -204,6 +213,10 @@ class QwenDecider:
         context['evidence_progress']=coverage
         if coverage['missing_core_metric_ids']:
             context['progress']['next_step']='stop_only' if context['progress']['terminal_action_required'] else 'search_or_get_missing_core_evidence_or_stop'
+        if 'task_decision' in state:
+            context['progress']['next_step']=state['task_decision']['next_step']
+            if context['progress']['terminal_action_required'] and context['progress']['next_step']=='investigate_or_stop':
+                context['progress']['next_step']='stop_with_evidence_gap'
         if len(state['goal'])>500:context['omissions'].append('goal_tail')
         if len(state.get('questions',[]))>4:context['omissions'].append('later_questions')
         return context
@@ -284,7 +297,7 @@ class QwenDecider:
         if self.actual_input+self.actual_output>=self.budget.total_tokens:
             raise DecisionFailure('token_budget_exhausted')
         context=self.context(state)
-        body=chat_body(self.model,self.prompt,json.dumps(context,ensure_ascii=False),self.budget.max_output_tokens,SCHEMA)
+        body=chat_body(self.model,self.prompt,json.dumps(context,ensure_ascii=False,separators=(',',':')),self.budget.max_output_tokens,SCHEMA)
         size=sum(len(m['content'].encode()) for m in body['messages'])
         reserve=size+256+self.budget.max_output_tokens # Conservative byte-based estimate, not a tokenizer guarantee.
         if size>self.budget.max_input_bytes:raise DecisionFailure('input_budget_exhausted')

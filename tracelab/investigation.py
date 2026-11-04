@@ -41,3 +41,42 @@ def prepare_investigation(metrics):
                 profit_chain=chain, signals=signals, investigation_tasks=tasks,
                 boundary='会计变化不是经营因果；现金流增长不自动证明盈利质量改善；不同利润层级不重复相加',
                 agent_executed=False, llm_called=False)
+
+
+def select_tasks(plan):
+    """Required tasks survive signal filtering; legacy fallback remains compatible."""
+    tasks=plan.get('investigation_tasks',[])
+    signals={s['id'] for s in plan.get('signals',[])}
+    matched=[t for t in tasks if t.get('required') or t.get('reason') in signals]
+    return matched or tasks
+
+
+def prepare_scoped_investigation(payload, goal):
+    """Adapt verified scoped facts to the existing signal planner, never broaden scope."""
+    from .agent import LocalFacts
+    facts=LocalFacts(payload)
+    metrics=[dict(item_id=r['fact_id'],status='calculated',difference=r['amounts']['change']['元'])
+             for r in facts.rows.values() if 'change' in r['amounts']]
+    computed=prepare_investigation(metrics)
+    evidence={e['evidence_id'] for e in payload['evidence']}
+    definitions=[
+        ('net_profit_fact','fact',['net_profit'],'核实净利润名称、期间、口径及金额'),
+        ('operating_cashflow_fact','fact',['operating_cashflow'],'核实经营现金流净额期间及金额'),
+        ('cashflow_disclosure','disclosure',['operating_cashflow'],'年报披露的主要原因是什么？'),
+        ('profit_cashflow_divergence','reconciliation',['net_profit','operating_cashflow'],'现有证据能否解释利润与现金流背离？'),
+        ('remaining_evidence_gaps','gaps',[],'仍缺什么证据，为什么无法继续？')]
+    tasks=[]
+    for key,kind,ids,question in definitions:
+        candidates=sorted({eid for fid in ids if fid in facts.rows
+                           for eid in facts.rows[fid]['evidence_ids']} & evidence)
+        if kind=='disclosure':candidates=sorted({'E07_28'} & evidence)
+        tasks.append(dict(id=key,kind=kind,required=True,reason='authorized_goal',
+            questions=[question],fact_ids=ids,candidate_evidence_ids=candidates,status='pending',
+            required_sources=({'fact':['合并报表对应项目两期原文'],
+                'disclosure':['年报同比原因披露'],
+                'reconciliation':['净利润至经营现金流调节资料','解释背离的经营披露'],
+                'gaps':['未解决任务的缺失来源说明']}[kind])))
+    return dict(task_contract_version='v1',signals=[dict(id='authorized_goal',description=goal)],
+        detected_signal_ids=[s['id'] for s in computed['signals']],
+        core_metric_ids=['net_profit','operating_cashflow'],investigation_tasks=tasks,
+        boundary='任务状态不是模型结论验收；不授权新增事实、证据或会计关系')

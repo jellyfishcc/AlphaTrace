@@ -1,5 +1,6 @@
 """Synthetic responses only. Assert sends, not only arithmetic."""
 import unittest
+from price_clock import fixed_price_clock
 from decimal import Decimal
 from unittest.mock import Mock,patch
 from tracelab.cost_budget import CostLedger,guarded_send,price,ENDPOINT,check_live_price
@@ -7,6 +8,8 @@ from tracelab.qwen_decider import LiveBailianTransport,DecisionFailure
 from tracelab.bailian import Config
 
 class CostTests(unittest.TestCase):
+    def setUp(self):
+        self.enterContext(fixed_price_clock())
     def send(self,ledger,a=100,b=20,bound=100):
         callback=Mock(return_value=({'usage':{'prompt_tokens':a,'completion_tokens':b}},'synthetic-id'))
         result=guarded_send(ledger,{'max_tokens':1200},callback,bound)
@@ -72,7 +75,7 @@ class CostTests(unittest.TestCase):
     def test_live_no_reliable_request_bound_no_send(self):
         body=dict(model='qwen-plus',max_tokens=1200,enable_thinking=False,stream=False)
         with patch('tracelab.cost_budget.VERIFIED_DATE','2026-11-02'),patch('tracelab.bailian.configuration',return_value=Config('synthetic',ENDPOINT.removesuffix('/chat/completions'),'qwen-plus',{})),patch('tracelab.stage3.call_api') as call:
-            with self.assertRaisesRegex(DecisionFailure,'token_budget_exhausted|price_reverification_required'):
+            with self.assertRaisesRegex(DecisionFailure,'token_budget_exhausted'):
                 LiveBailianTransport(authorized=True,expected_endpoint=ENDPOINT).send(body,90,{})
             call.assert_not_called()
 
@@ -90,3 +93,9 @@ class CostTests(unittest.TestCase):
         self.assertEqual(price(100000,1200),Decimal('0.0824'))
         self.assertEqual(price(200000,1200),Decimal('0.504'))
         self.assertEqual(price(997952,1200),Decimal('4.8477696'))
+
+    def test_five_model_capacity_reservations_below_thirty(self):
+        from tracelab.cost_budget import MODEL_INPUT_CEILING
+        self.assertEqual(MODEL_INPUT_CEILING,997952)
+        self.assertEqual(price(MODEL_INPUT_CEILING,1200)*5,Decimal('24.238848'))
+        self.assertLess(price(MODEL_INPUT_CEILING,1200)*5,Decimal('30'))

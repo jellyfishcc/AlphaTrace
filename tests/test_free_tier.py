@@ -2,6 +2,7 @@
 import io
 import json
 import unittest
+from price_clock import fixed_price_clock
 from unittest.mock import patch,Mock
 from urllib.error import HTTPError
 from tracelab.qwen_decider import LiveBailianTransport,DecisionFailure,Budget
@@ -12,6 +13,7 @@ from test_qwen_decider import reply
 
 class FreeTierTests(unittest.TestCase):
     def setUp(self):
+        self.enterContext(fixed_price_clock())
         self.body=dict(model='qwen-plus',max_tokens=1200,stream=False,enable_thinking=False)
         self.config=Config('synthetic',ENDPOINT.removesuffix('/chat/completions'),'qwen-plus',{})
         self.stop=dict(action='stop',arguments={'reason':'已检索但缺少原因披露'})
@@ -98,3 +100,32 @@ class FreeTierTests(unittest.TestCase):
     def test_workspace_confirmation_required(self):
         with self.assertRaisesRegex(ValueError,'workspace_unconfirmed'):check_free_tier_confirmation(False)
         check_free_tier_confirmation(True)
+
+    def test_expired_price_blocks_before_reservation_and_send(self):
+        from datetime import datetime
+        from price_clock import BEIJING
+        with fixed_price_clock(datetime(2026,11,3,0,tzinfo=BEIJING)), patch('tracelab.bailian.configuration',return_value=self.config), patch('tracelab.stage3.call_api') as call:
+            t=self.live()
+            with self.assertRaisesRegex(DecisionFailure,'price_reverification_required'):t.send(self.body,90,{})
+            call.assert_not_called();self.assertEqual(t.cost_ledger.rows,[])
+
+    def test_beijing_date_not_utc_date_controls_send(self):
+        from datetime import datetime,timezone
+        # Both instants are Nov 2 UTC; Beijing switches to Nov 3 at 16:00 UTC.
+        for hour,allowed in ((15,True),(16,False)):
+            with self.subTest(hour=hour), fixed_price_clock(datetime(2026,11,2,hour,59,tzinfo=timezone.utc)), patch('tracelab.bailian.configuration',return_value=self.config), patch('tracelab.stage3.call_api',return_value=(reply(self.stop),'synthetic')) as call:
+                if allowed:self.live().send(self.body,90,{})
+                else:
+                    with self.assertRaisesRegex(DecisionFailure,'price_reverification_required'):self.live().send(self.body,90,{})
+                self.assertEqual(call.call_count,int(allowed))
+
+    def test_unsupported_billing_features_never_send(self):
+        for fields,code in (({'enable_thinking':True},'unsupported_billing_mode'),({'stream':True},'unsupported_billing_mode'),({'enable_search':True},'unsupported_billable_feature')):
+            with self.subTest(fields=fields), patch('tracelab.bailian.configuration',return_value=self.config), patch('tracelab.stage3.call_api') as call:
+                with self.assertRaisesRegex(DecisionFailure,code):self.live().send(dict(self.body,**fields),90,{})
+                call.assert_not_called()
+
+    def test_expired_free_tier_still_blocks_with_valid_price_date(self):
+        with patch('tracelab.cost_budget.FREE_TIER',dict(expires='2026-11-02')), patch('tracelab.bailian.configuration',return_value=self.config), patch('tracelab.stage3.call_api') as call:
+            with self.assertRaisesRegex(DecisionFailure,'free_tier_confirmation_expired'):self.live().send(self.body,90,{})
+            call.assert_not_called()

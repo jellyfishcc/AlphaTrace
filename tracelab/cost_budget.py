@@ -2,8 +2,13 @@
 from decimal import Decimal
 from datetime import datetime, timezone, timedelta
 
-PRICE_URL = 'https://help.aliyun.cn/zh/model-studio/qwen-plus'
-VERIFIED_DATE = '2026-11-02'
+PRICE_URL = 'https://help.aliyun.com/zh/model-studio/qwen-plus'
+# Rechecked 2026-11-13 (Asia/Shanghai): qwen-plus, cn-beijing,
+# functionally equivalent to qwen-plus-2025-12-01; ordinary real-time pricing,
+# enable_thinking=False, stream=False; no Batch or explicit cache creation.
+# Input/output CNY per million: <=128k 0.8/2; <=256k 2.4/20; <=1m 4.8/48.
+# Audit: docs/dev-reports/2026-11-13-price-date-maintenance.md
+VERIFIED_DATE = '2026-11-13'
 ENDPOINT = 'https://ws-6sp1nti4y4d07vun.cn-beijing.maas.aliyuncs.com/compatible-mode/v1/chat/completions'
 # Official model ceiling, NOT an estimate from bytes. Too large for this run's
 # 60000-token hard limit. Free-tier mode uses it only for auxiliary CNY reservations.
